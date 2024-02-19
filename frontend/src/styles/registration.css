@@ -1,7 +1,7 @@
 .container {
   max-width: 600px;
-  margin: 20px auto; /* Increased margin */
-  padding: 10px; /* Decreased padding */
+  margin: 20px auto;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -13,8 +13,8 @@ h2 {
 
 .form-control {
   width: 100%;
-  padding: 8px; /* Decreased padding */
-  margin-bottom: 8px; /* Decreased margin */
+  padding: 8px;
+  margin-bottom: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }

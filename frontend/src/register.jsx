@@ -18,7 +18,7 @@ function Register() {
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Process form data here (e.g., send it to a server)
+    // Processing form data here (e.g., send it to a server)
     console.log({
       firstName,
       lastName,
@@ -31,7 +31,7 @@ function Register() {
       registerAs,
       qualification
     });
-    // Reset form fields
+    // Resetting form fields
     setFirstName('');
     setLastName('');
     setAge('');
