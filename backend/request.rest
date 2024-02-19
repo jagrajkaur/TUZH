@@ -1,0 +1,14 @@
+POST http://localhost:5000/api/v1/auth/register
+Content-Type: application/json
+
+{
+    "first_name":"Jagraj",
+    "last_name":"Kaur",
+    "date_of_birth":"1997-07-10",
+    "gender":"Female",
+    "address":"Brampton",
+    "email":"kaurjagraj@gmail.com",
+    "password":"Jagraj@123",
+    "user_type":"Patient",
+    "speciality":""
+}
