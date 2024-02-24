@@ -15,7 +15,7 @@ export const register = async (req, res) => {
 
         //check if user exist
         if(user){
-            return res.staus(400).json({message:'User already exists'})
+            return res.status(400).json({message:'User already exists'})
         }
 
         //hash password
@@ -36,7 +36,7 @@ export const register = async (req, res) => {
         //Add speciality if user type is 'doctor'
         if(user_type === 'doctor'){
             if(!speciality){
-                return res.staus(400).json({ message: "Speciality is required for doctors" });
+                return res.status(400).json({ message: "Speciality is required for doctors" });
             }
             user.speciality = speciality;
         }
