@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BiMenu } from 'react-icons/bi';
-import logo from '../assets/images/logo.png';
-import userImg from '../assets/images/avatar-icon.png';
+import sideImg from "../assets/images/regSide.png";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState('');
@@ -30,6 +28,7 @@ const Signup = () => {
       registerAs,
       qualification,
     });
+    // Reset form fields
     setFirstName('');
     setLastName('');
     setAge('');
@@ -46,17 +45,24 @@ const Signup = () => {
   const qualificationOptions = ['MD', 'PhD', 'MBBS', 'MS', 'DM'];
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
-      <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md bg-blue-50">
-        <h2 className="text-2xl font-bold mb-4 text-center">Registration Form</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4">
+    <div className="min-h-screen flex justify-center items-center bg-gray-100 ">
+      <div className="max-w-screen-xl flex flex-col lg:flex-row mx-4 lg:mx-auto rounded-lg shadow-lg overflow-hidden" style={{ backgroundColor: "#FFF5DF" }}>
+        {/* Image Section */}
+        <div className="lg:w-1/2">
+          <img src={sideImg} alt="Login Image" className="w-full h-full object-cover" />
+          </div>
+        
+
+        {/* Form Section */}
+        <div className="lg:w-1/2 p-8">
+          <h2 className="text-3xl font-semibold mb-4">Sign Up</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="firstName" className="block font-semibold">First Name:</label>
               <input
                 type="text"
                 id="firstName"
-                className="form-input block w-full border-gray-300 rounded-md"
+                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
@@ -67,7 +73,7 @@ const Signup = () => {
               <input
                 type="text"
                 id="lastName"
-                className="form-input block w-full border-gray-300 rounded-md"
+                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 required
@@ -78,7 +84,7 @@ const Signup = () => {
               <input
                 type="number"
                 id="age"
-                className="form-input block w-full border-gray-300 rounded-md"
+                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 required
@@ -117,7 +123,7 @@ const Signup = () => {
               <label htmlFor="address" className="block font-semibold">Address:</label>
               <textarea
                 id="address"
-                className="form-textarea block w-full border-gray-300 rounded-md"
+                className="form-textarea block w-full px-4 py-2 border border-gray-300 rounded-md"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 required
@@ -128,7 +134,7 @@ const Signup = () => {
               <input
                 type="email"
                 id="email"
-                className="form-input block w-full border-gray-300 rounded-md"
+                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -139,7 +145,7 @@ const Signup = () => {
               <input
                 type="password"
                 id="password"
-                className="form-input block w-full border-gray-300 rounded-md"
+                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -150,7 +156,7 @@ const Signup = () => {
               <input
                 type="password"
                 id="confirmPassword"
-                className="form-input block w-full border-gray-300 rounded-md"
+                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -160,7 +166,7 @@ const Signup = () => {
               <label htmlFor="registerAs" className="block font-semibold">Register as:</label>
               <select
                 id="registerAs"
-                className="form-select block w-full border-gray-300 rounded-md"
+                className="form-select block w-full px-4 py-2 border border-gray-300 rounded-md"
                 value={registerAs}
                 onChange={(e) => setRegisterAs(e.target.value)}
                 required
@@ -188,12 +194,15 @@ const Signup = () => {
                 </select>
               </div>
             )}
-            <button type="submit" className="btn-primary w-full py-2 mt-4 bg-primaryColor text-white font-semibold rounded-md">Register</button>
+            <button type="submit" className="btn-primary w-full py-2 mt-4 bg-blue-500 text-white font-semibold rounded-md">Register</button>
+          </form>
+          <div className="flex justify-between mt-4">
+            <Link to="/login" className="text-blue-500 hover:underline">Already have an account? Login</Link>
           </div>
-        </form>
-        <div className="flex justify-between mt-4">
-          <Link to="/login" className="text-primaryColor hover:underline">Already have an account? Login</Link>
         </div>
+        
+        
+
       </div>
     </div>
   );
