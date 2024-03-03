@@ -7,42 +7,114 @@ const Signup = () => {
   const [lastName, setLastName] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('');
-  const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [registerAs, setRegisterAs] = useState('');
   const [qualification, setQualification] = useState('');
+  const [securityQuestion, setSecurityQuestion] = useState('');
+  const [securityAnswer, setSecurityAnswer] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [firstNameError, setFirstNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
+  const [ageError, setAgeError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const validateName = (name) => {
+    const regex = /^[a-zA-Z ]{1,30}$/; // Allows only letters and spaces, max length 30
+    return regex.test(name);
+  };
+
+  const validateAge = (age) => {
+    return parseInt(age) > 18;
+  };
+
+  const validatePasswordMatch = () => {
+    return password === confirmPassword;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validate email
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      return;
+    } else {
+      setEmailError('');
+    }
+
+    // Validate first name
+    if (!validateName(firstName)) {
+      setFirstNameError('First name must contain only letters and be max 30 characters long');
+      return;
+    } else {
+      setFirstNameError('');
+    }
+
+    // Validate last name
+    if (!validateName(lastName)) {
+      setLastNameError('Last name must contain only letters and be max 30 characters long');
+      return;
+    } else {
+      setLastNameError('');
+    }
+
+    // Validate age
+    if (!validateAge(age)) {
+      setAgeError('Age must be greater than 18');
+      return;
+    } else {
+      setAgeError('');
+    }
+
+    // Validate password match
+    if (!validatePasswordMatch()) {
+      setPasswordError('Passwords do not match');
+      setConfirmPasswordError('Passwords do not match');
+      return;
+    } else {
+      setPasswordError('');
+      setConfirmPasswordError('');
+    }
+
     console.log({
       firstName,
       lastName,
       age,
       gender,
-      address,
       email,
       password,
       confirmPassword,
       registerAs,
       qualification,
+      securityQuestion,
+      securityAnswer
     });
+
     // Reset form fields
     setFirstName('');
     setLastName('');
     setAge('');
     setGender('');
-    setAddress('');
     setEmail('');
     setPassword('');
     setConfirmPassword('');
     setRegisterAs('');
     setQualification('');
+    setSecurityQuestion('');
+    setSecurityAnswer('');
   };
 
   const registerOptions = ['Patient', 'Doctor'];
   const qualificationOptions = ['MD', 'PhD', 'MBBS', 'MS', 'DM'];
+  const securityQuestions = ['What is your mother\'s maiden name?', 'What is the name of your first pet?', 'What is your favorite color?', 'In what city were you born?'];
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 ">
@@ -61,7 +133,7 @@ const Signup = () => {
       <input
         type="text"
         placeholder="First Name"
-        className="form-input block w-1/2 px-4 py-2 border border-gray-300 rounded-md text-base"
+        className={`form-input block w-1/2 px-4 py-2 border border-gray-300 rounded-md text-base ${firstNameError ? 'border-red-500' : ''}`}
         value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
         required
@@ -69,17 +141,19 @@ const Signup = () => {
       <input
         type="text"
         placeholder="Last Name"
-        className="form-input block w-1/2 px-4 py-2 border border-gray-300 rounded-md text-base"
+        className={`form-input block w-1/2 px-4 py-2 border border-gray-300 rounded-md text-base ${lastNameError ? 'border-red-500' : ''}`}
         value={lastName}
         onChange={(e) => setLastName(e.target.value)}
         required
       />
     </div>
+    {firstNameError && <p className="text-red-500 text-sm">{firstNameError}</p>}
+    {lastNameError && <p className="text-red-500 text-sm">{lastNameError}</p>}
     <div className="flex space-x-4">
       <input
         type="number"
         placeholder="Age"
-        className="form-input block w-1/2 px-4 py-2 border border-gray-300 rounded-md text-base"
+        className={`form-input block w-1/2 px-4 py-2 border border-gray-300 rounded-md text-base ${ageError ? 'border-red-500' : ''}`}
         value={age}
         onChange={(e) => setAge(e.target.value)}
         required
@@ -96,26 +170,20 @@ const Signup = () => {
         <option value="female">Female</option>
       </select>
     </div>
-    <input
-      type="text"
-      placeholder="Address"
-      className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
-      value={address}
-      onChange={(e) => setAddress(e.target.value)}
-      required
-    />
+    {ageError && <p className="text-red-500 text-sm">{ageError}</p>}
     <input
       type="email"
       placeholder="Email"
-      className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
+      className={`form-input block w-full px-4 py-2 border border-gray-300 rounded-md text-base ${emailError ? 'border-red-500' : ''}`}
       value={email}
       onChange={(e) => setEmail(e.target.value)}
       required
     />
+    {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
     <input
       type="password"
       placeholder="Password"
-      className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
+      className={`form-input block w-full px-4 py-2 border border-gray-300 rounded-md text-base ${passwordError ? 'border-red-500' : ''}`}
       value={password}
       onChange={(e) => setPassword(e.target.value)}
       required
@@ -123,11 +191,12 @@ const Signup = () => {
     <input
       type="password"
       placeholder="Confirm Password"
-      className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
+      className={`form-input block w-full px-4 py-2 border border-gray-300 rounded-md text-base ${confirmPasswordError ? 'border-red-500' : ''}`}
       value={confirmPassword}
       onChange={(e) => setConfirmPassword(e.target.value)}
       required
     />
+    {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
     <select
       placeholder="Register As"
       className="form-select block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
@@ -154,6 +223,26 @@ const Signup = () => {
         ))}
       </select>
     )}
+    <select
+      placeholder="Security Question"
+      className="form-select block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
+      value={securityQuestion}
+      onChange={(e) => setSecurityQuestion(e.target.value)}
+      required
+    >
+      <option value="">Security Question</option>
+      {securityQuestions.map((question, index) => (
+        <option key={index} value={question}>{question}</option>
+      ))}
+    </select>
+    <input
+      type="text"
+      placeholder="Security Answer"
+      className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
+      value={securityAnswer}
+      onChange={(e) => setSecurityAnswer(e.target.value)}
+      required
+    />
     <button type="submit" className="btn-primary w-full py-2 mt-4 bg-blue-500 text-white font-semibold rounded-md">Register</button>
   </form>
   <div className="flex justify-between mt-4">

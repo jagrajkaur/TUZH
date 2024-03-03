@@ -13,6 +13,12 @@ const Login = () => {
     setPassword('');
   };
 
+  const validateEmail = (email) => {
+    // Regular expression for email validation
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 ">
       <div className="max-w-screen-lg m-20 flex lg:flex-row mx-4 lg:mx-auto rounded-lg shadow-lg overflow-hidden" style={{ backgroundColor: "#CBF0F3" }}>
@@ -27,6 +33,8 @@ const Login = () => {
               className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              pattern="[^\s@]+@[^\s@]+\.[^\s@]+" // Pattern for email validation
+              title="Please enter a valid email address"
               required
             />
             <input
