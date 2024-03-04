@@ -46,7 +46,7 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 ">
-      <div className="max-w-screen-xl flex flex-col lg:flex-row mx-4 lg:mx-auto rounded-lg shadow-lg overflow-hidden" style={{ backgroundColor: "#FFF5DF" }}>
+      <div className="max-w-screen-lg m-20 flex lg:flex-row mx-4 lg:mx-auto rounded-lg shadow-lg overflow-hidden" style={{ backgroundColor: "#FFF5DF" }}>
         {/* Image Section */}
         <div className="lg:w-1/2">
           <img src={sideImg} alt="Login Image" className="w-full h-full object-cover" />
@@ -54,152 +54,113 @@ const Signup = () => {
         
 
         {/* Form Section */}
-        <div className="lg:w-1/2 p-8">
-          <h2 className="text-3xl font-semibold mb-4">Sign Up</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="firstName" className="block font-semibold">First Name:</label>
-              <input
-                type="text"
-                id="firstName"
-                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="lastName" className="block font-semibold">Last Name:</label>
-              <input
-                type="text"
-                id="lastName"
-                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="age" className="block font-semibold">Age:</label>
-              <input
-                type="number"
-                id="age"
-                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-x-4">
-              <span className="block font-semibold">Gender:</span>
-              <div className="flex items-center">
-                <label htmlFor="male" className="mr-2">
-                  <input
-                    type="radio"
-                    id="male"
-                    name="gender"
-                    value="male"
-                    checked={gender === 'male'}
-                    onChange={() => setGender('male')}
-                    className="mr-1"
-                    required
-                  /> Male
-                </label>
-                <label htmlFor="female">
-                  <input
-                    type="radio"
-                    id="female"
-                    name="gender"
-                    value="female"
-                    checked={gender === 'female'}
-                    onChange={() => setGender('female')}
-                    className="mr-1"
-                    required
-                  /> Female
-                </label>
-              </div>
-            </div>
-            <div>
-              <label htmlFor="address" className="block font-semibold">Address:</label>
-              <textarea
-                id="address"
-                className="form-textarea block w-full px-4 py-2 border border-gray-300 rounded-md"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block font-semibold">Email:</label>
-              <input
-                type="email"
-                id="email"
-                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block font-semibold">Password:</label>
-              <input
-                type="password"
-                id="password"
-                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="confirmPassword" className="block font-semibold">Confirm Password:</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="registerAs" className="block font-semibold">Register as:</label>
-              <select
-                id="registerAs"
-                className="form-select block w-full px-4 py-2 border border-gray-300 rounded-md"
-                value={registerAs}
-                onChange={(e) => setRegisterAs(e.target.value)}
-                required
-              >
-                <option value="">Select Option</option>
-                {registerOptions.map((option, index) => (
-                  <option key={index} value={option}>{option}</option>
-                ))}
-              </select>
-            </div>
-            {registerAs === 'Doctor' && (
-              <div>
-                <label htmlFor="qualification" className="block font-semibold">Qualification:</label>
-                <select
-                  id="qualification"
-                  className="form-select block w-full border-gray-300 rounded-md"
-                  value={qualification}
-                  onChange={(e) => setQualification(e.target.value)}
-                  required
-                >
-                  <option value="">Select Qualification</option>
-                  {qualificationOptions.map((option, index) => (
-                    <option key={index} value={option}>{option}</option>
-                  ))}
-                </select>
-              </div>
-            )}
-            <button type="submit" className="btn-primary w-full py-2 mt-4 bg-blue-500 text-white font-semibold rounded-md">Register</button>
-          </form>
-          <div className="flex justify-between mt-4">
-            <Link to="/login" className="text-blue-500 hover:underline">Already have an account? Login</Link>
-          </div>
-        </div>
+<div className="lg:w-1/2 p-8 overflow-y-auto">
+  <h2 className="text-3xl font-semibold mb-4">Sign Up</h2>
+  <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="flex space-x-4">
+      <input
+        type="text"
+        placeholder="First Name"
+        className="form-input block w-1/2 px-4 py-2 border border-gray-300 rounded-md text-base"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        required
+      />
+      <input
+        type="text"
+        placeholder="Last Name"
+        className="form-input block w-1/2 px-4 py-2 border border-gray-300 rounded-md text-base"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        required
+      />
+    </div>
+    <div className="flex space-x-4">
+      <input
+        type="number"
+        placeholder="Age"
+        className="form-input block w-1/2 px-4 py-2 border border-gray-300 rounded-md text-base"
+        value={age}
+        onChange={(e) => setAge(e.target.value)}
+        required
+      />
+      <select
+        placeholder="Gender"
+        className="form-select block w-1/2 px-4 py-2 border border-gray-300 rounded-md text-base"
+        value={gender}
+        onChange={(e) => setGender(e.target.value)}
+        required
+      >
+        <option value="">Gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+    </div>
+    <input
+      type="text"
+      placeholder="Address"
+      className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
+      value={address}
+      onChange={(e) => setAddress(e.target.value)}
+      required
+    />
+    <input
+      type="email"
+      placeholder="Email"
+      className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      required
+    />
+    <input
+      type="password"
+      placeholder="Password"
+      className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      required
+    />
+    <input
+      type="password"
+      placeholder="Confirm Password"
+      className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
+      value={confirmPassword}
+      onChange={(e) => setConfirmPassword(e.target.value)}
+      required
+    />
+    <select
+      placeholder="Register As"
+      className="form-select block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
+      value={registerAs}
+      onChange={(e) => setRegisterAs(e.target.value)}
+      required
+    >
+      <option value="">Register As</option>
+      {registerOptions.map((option, index) => (
+        <option key={index} value={option}>{option}</option>
+      ))}
+    </select>
+    {registerAs === 'Doctor' && (
+      <select
+        placeholder="Qualification"
+        className="form-select block w-full px-4 py-2 border border-gray-300 rounded-md text-base"
+        value={qualification}
+        onChange={(e) => setQualification(e.target.value)}
+        required
+      >
+        <option value="">Qualification</option>
+        {qualificationOptions.map((option, index) => (
+          <option key={index} value={option}>{option}</option>
+        ))}
+      </select>
+    )}
+    <button type="submit" className="btn-primary w-full py-2 mt-4 bg-blue-500 text-white font-semibold rounded-md">Register</button>
+  </form>
+  <div className="flex justify-between mt-4">
+    <Link to="/login" className="text-blue-500 hover:underline">Already have an account? Login</Link>
+  </div>
+</div>
+
         
         
 

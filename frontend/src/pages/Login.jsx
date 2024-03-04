@@ -15,34 +15,28 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 ">
-      <div className="max-w-screen-xl flex flex-col lg:flex-row mx-4 lg:mx-auto bg-white rounded-lg shadow-lg overflow-hidden" style={{ backgroundColor: "#CBF0F3" }}>
+      <div className="max-w-screen-lg m-20 flex lg:flex-row mx-4 lg:mx-auto rounded-lg shadow-lg overflow-hidden" style={{ backgroundColor: "#CBF0F3" }}>
         
         {/* Form Section */}
-        <div className="lg:w-1/2 p-8">
+        <div className="lg:w-1/2 p-8 overflow-y-auto">
           <h2 className="text-3xl font-semibold mb-4">Login</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block font-semibold">Email:</label>
-              <input
-                type="email"
-                id="email"
-                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block font-semibold">Password:</label>
-              <input
-                type="password"
-                id="password"
-                className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+            <input
+              type="email"
+              placeholder="Email"
+              className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="form-input block w-full px-4 py-2 border border-gray-300 rounded-md"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
             <button type="submit" className="btn-primary w-full py-2 bg-blue-500 text-white font-semibold rounded-md">Login</button>
           </form>
           <div className="flex justify-between mt-4">
