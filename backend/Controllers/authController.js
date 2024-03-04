@@ -7,6 +7,10 @@ import bcrypt from 'bcryptjs';
    To implement the login function to verify the details and generate token for valid users.
 */
 
+let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
+let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
+
+/* To generte the JWT token for logged in user based on user id and role */
 const generateToken = user => {
     return jwt.sign(
         {id:user._id, role:user.user_type}, 
@@ -15,9 +19,26 @@ const generateToken = user => {
     )
 }
 
-//Register a new user
+/* To register a new user after validating the inputs */
 export const register = async (req, res) => {
     const {first_name, last_name, date_of_birth, gender, address, email, password, user_type, speciality} = req.body;
+
+    //validate user inputs
+    if (first_name.length <= 2) {
+        return res.status(403).json({ "error": "First name must be atleast 3 characters" });
+    }
+
+    if (!email.length) {
+        return res.status(403).json({ "error": "Email is mandatory" });
+    }
+
+    if (!emailRegex.test(email)) {
+        return res.status(403).json({ "error": "Invalid email or format. Email should be in format abc@xyz.com" });
+    }
+
+    if (!passwordRegex.test(password)) {
+        return res.status(403).json({ "error": "Password should be between 6-20 characters and must have at least one numeric and one uppercase." })
+    }
 
     try{
         let user = await User.findOne({email});
@@ -43,7 +64,7 @@ export const register = async (req, res) => {
         })
 
         //Add speciality if user type is 'doctor'
-        if(user_type === 'doctor'){
+        if(user_type === 'Doctor'){
             if(!speciality){
                 return res.status(400).json({ message: "Speciality is required for doctors" });
             }
@@ -61,7 +82,7 @@ export const register = async (req, res) => {
     }
 };
 
-//to login existing user after validating credentials
+/* To login existing user after validating credentials */
 export const login = async(req,res)=>{
     const {email} = req.body;
 
