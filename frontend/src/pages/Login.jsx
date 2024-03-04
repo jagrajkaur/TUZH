@@ -1,16 +1,47 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import sideImg from "../assets/images/side.jpg";
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ email, password });
-    setEmail('');
-    setPassword('');
+    setError('');
+
+    // Client-side validation
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3000/login', {
+        email,
+        password
+      });
+
+      if (response.data.success) {
+        // Login successful, navigate to home page or dashboard
+        alert("Success")
+        //navigate('/dashboard');
+      } else {
+        
+        alert('Invalid email or password');
+        setEmail('');
+        setPassword('');
+      }
+    } catch (error) {
+      alert('An error occurred. Please try again later.');
+      setEmail('');
+      setPassword('');
+      //console.error('Error:', error);
+      //setError('An error occurred. Please try again later.');
+    }
   };
 
   const validateEmail = (email) => {
