@@ -32,7 +32,7 @@ export const getSingleUser = async(req,res)=>{
     const id = req.params.id;
 
     try{
-        const user = await User.findById(id).select("-password");
+        const user = await User.findById(id).select("-password");   // to exclude the password field
 
         res.status(200).json({success:true, message:"User found", data:user});
     } catch(err) {
@@ -42,7 +42,16 @@ export const getSingleUser = async(req,res)=>{
 
 export const getAllUser = async(req,res)=>{
     try{
-        const users = await User.find({}).select("-password");  // to exclude the password field
+        let query = {};
+        if(req.query.user_type && req.query.user_type.toLowerCase() === 'doctor'){
+            query.user_type = 'Doctor',
+            query.isApproved = 'Approved'
+        }
+        
+        const users = await User.find(query).select("-password");  // to exclude the password field
+        if(users.length === 0) {
+            return res.status(404).json({ success:false, message:"No user found" });
+        }
 
         res.status(200).json({success:true, message:"Users found", data:users});
     } catch(err) {
