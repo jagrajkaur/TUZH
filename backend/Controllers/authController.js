@@ -21,23 +21,27 @@ const generateToken = user => {
 
 /* To register a new user after validating the inputs */
 export const register = async (req, res) => {
-    const {first_name, last_name, date_of_birth, gender, address, email, password, user_type, speciality} = req.body;
+    const {first_name, last_name, date_of_birth, gender, address, email, password, confirmPassword, user_type, speciality} = req.body;
 
     //validate user inputs
     if (first_name.length <= 2) {
-        return res.status(403).json({ "error": "First name must be atleast 3 characters" });
+        return res.status(403).json({ message: "First name must be atleast 3 characters" });
     }
 
     if (!email.length) {
-        return res.status(403).json({ "error": "Email is mandatory" });
+        return res.status(403).json({ message: "Email is mandatory" });
     }
 
     if (!emailRegex.test(email)) {
-        return res.status(403).json({ "error": "Invalid email or format. Email should be in format abc@xyz.com" });
+        return res.status(403).json({ message: "Invalid email or format. Email should be in format abc@xyz.com" });
     }
 
     if (!passwordRegex.test(password)) {
-        return res.status(403).json({ "error": "Password should be between 6-20 characters and must have at least one numeric and one uppercase." })
+        return res.status(403).json({ message: "Password should be between 6-20 characters and must have at least one numeric and one uppercase." })
+    }
+
+    if(confirmPassword != password) {
+        return res.status(403).json({ message: "Both the passwords don't match" });
     }
 
     try{
@@ -45,7 +49,7 @@ export const register = async (req, res) => {
 
         //check if user exist
         if(user){
-            return res.status(400).json({message:'User already exists'});
+            return res.status(400).json({ message: "User with the same email already exists" });
         }
 
         //hashing password for security using bcrypt js library
@@ -84,25 +88,26 @@ export const register = async (req, res) => {
 
 /* To login existing user after validating credentials */
 export const login = async(req,res)=>{
-    const {email} = req.body;
+    const {email, password} = req.body;
+
+    if(!email || !password) {
+        return res.staus(400).json({ message:"Please enter all the details" });
+    }
 
     try {
         let user = null;
 
         const foundUser = await User.findOne({email});
-        if(foundUser) {
-            user = foundUser;
+        if(!foundUser) {    //check if user exist with this email or not
+            return res.status(404).json({ message: "User with this email does not exist" }); 
         }
-
-        //check if user exist or not
-        if(!user){
-            return res.status(404).json({ message: "User not found" });
-        }
-    
+        
+        user = foundUser;
+       
         //compare password
         const isPasswordMatch = await bcrypt.compare(req.body.password, foundUser.password);
         if(!isPasswordMatch){
-            return res.status(400).json({ status:false, message: "Invalid credentials" });
+            return res.status(400).json({ status:false, message: "Incorrect password" });
         }
 
         //get token
