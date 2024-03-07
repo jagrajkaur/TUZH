@@ -17,7 +17,7 @@ const Signup = () => {
     securityQuestion: '',
     securityAnswer: ''
   });
-  const navigate = useNavigate();
+  
   const [errors, setErrors] = useState({
     firstName: '',
     lastName: '',
