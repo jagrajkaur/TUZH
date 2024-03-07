@@ -2,25 +2,55 @@ import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
+/* @author: Jagraj Kaur
+   @FileDescription: Implemented function to register new user(patient/doctor)
+   To implement the login function to verify the details and generate token for valid users.
+*/
 
-console.log("------Inside controller-----");
-//Register a new user
+let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
+let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
+
+/* To generte the JWT token for logged in user based on user id and role */
+const generateToken = user => {
+    return jwt.sign(
+        {id:user._id, role:user.user_type}, 
+        process.env.JWT_SECRET_KEY, 
+        {expiresIn: "15d"}
+    )
+}
+
+/* To register a new user after validating the inputs */
 export const register = async (req, res) => {
-    console.log("=== Hi lets create the user account ===");
-    console.log(req.body);
-    const {first_name, last_name, date_of_birth, gender, address, email, password, user_type, speciality} = req.body
+    const {first_name, last_name, date_of_birth, gender, address, email, password, user_type, speciality} = req.body;
+
+    //validate user inputs
+    if (first_name.length <= 2) {
+        return res.status(403).json({ "error": "First name must be atleast 3 characters" });
+    }
+
+    if (!email.length) {
+        return res.status(403).json({ "error": "Email is mandatory" });
+    }
+
+    if (!emailRegex.test(email)) {
+        return res.status(403).json({ "error": "Invalid email or format. Email should be in format abc@xyz.com" });
+    }
+
+    if (!passwordRegex.test(password)) {
+        return res.status(403).json({ "error": "Password should be between 6-20 characters and must have at least one numeric and one uppercase." })
+    }
 
     try{
         let user = await User.findOne({email});
 
         //check if user exist
         if(user){
-            return res.staus(400).json({message:'User already exists'})
+            return res.status(400).json({message:'User already exists'});
         }
 
-        //hash password
-        const salt = await bcrypt.genSalt(10)
-        const hashPassword = await bcrypt.hash(password, salt)
+        //hashing password for security using bcrypt js library
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(password, salt);
 
         user = new User({
             first_name,
@@ -34,9 +64,9 @@ export const register = async (req, res) => {
         })
 
         //Add speciality if user type is 'doctor'
-        if(user_type === 'doctor'){
+        if(user_type === 'Doctor'){
             if(!speciality){
-                return res.staus(400).json({ message: "Speciality is required for doctors" });
+                return res.status(400).json({ message: "Speciality is required for doctors" });
             }
             user.speciality = speciality;
         }
@@ -52,6 +82,37 @@ export const register = async (req, res) => {
     }
 };
 
+/* To login existing user after validating credentials */
 export const login = async(req,res)=>{
-    console.log("Hi this is login function");
+    const {email} = req.body;
+
+    try {
+        let user = null;
+
+        const foundUser = await User.findOne({email});
+        if(foundUser) {
+            user = foundUser;
+        }
+
+        //check if user exist or not
+        if(!user){
+            return res.status(404).json({ message: "User not found" });
+        }
+    
+        //compare password
+        const isPasswordMatch = await bcrypt.compare(req.body.password, foundUser.password);
+        if(!isPasswordMatch){
+            return res.status(400).json({ status:false, message: "Invalid credentials" });
+        }
+
+        //get token
+        const token = generateToken(user);
+
+        const {password, user_type, ...rest} = user._doc;
+
+        return res.status(200).json({ status:true, message: "Successfully login", token, data:{...rest}, role:user_type });
+
+    } catch (err) {
+        return res.status(500).json({ status:false, message: "Failed to login" });
+    }
 }
