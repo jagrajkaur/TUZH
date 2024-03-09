@@ -113,6 +113,7 @@ export const login = async(req,res)=>{
         //get token
         const token = generateToken(user);
 
+        /* to exclude password and user type info from user doc */
         const {password, user_type, ...rest} = user._doc;
 
         return res.status(200).json({ status:true, message: "Successfully login", token, data:{...rest}, role:user_type });
