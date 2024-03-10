@@ -7,6 +7,10 @@ import bcrypt from 'bcryptjs';
    To implement the login function to verify the details and generate token for valid users.
 */
 
+let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
+let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
+
+/* To generte the JWT token for logged in user based on user id and role */
 const generateToken = user => {
     return jwt.sign(
         {id:user._id, role:user.user_type}, 
@@ -15,16 +19,37 @@ const generateToken = user => {
     )
 }
 
-//Register a new user
+/* To register a new user after validating the inputs */
 export const register = async (req, res) => {
-    const {first_name, last_name, date_of_birth, gender, address, email, password, user_type, speciality} = req.body;
+    const {first_name, last_name, date_of_birth, gender, address, email, password, confirmPassword, user_type, speciality} = req.body;
+
+    //validate user inputs
+    if (first_name.length <= 2) {
+        return res.status(403).json({ message: "First name must be atleast 3 characters" });
+    }
+
+    if (!email.length) {
+        return res.status(403).json({ message: "Email is mandatory" });
+    }
+
+    if (!emailRegex.test(email)) {
+        return res.status(403).json({ message: "Invalid email or format. Email should be in format abc@xyz.com" });
+    }
+
+    if (!passwordRegex.test(password)) {
+        return res.status(403).json({ message: "Password should be between 6-20 characters and must have at least one numeric and one uppercase." })
+    }
+
+    if(confirmPassword != password) {
+        return res.status(403).json({ message: "Both the passwords don't match" });
+    }
 
     try{
         let user = await User.findOne({email});
 
         //check if user exist
         if(user){
-            return res.status(400).json({message:'User already exists'});
+            return res.status(400).json({ message: "User with the same email already exists" });
         }
 
         //hashing password for security using bcrypt js library
@@ -43,7 +68,7 @@ export const register = async (req, res) => {
         })
 
         //Add speciality if user type is 'doctor'
-        if(user_type === 'doctor'){
+        if(user_type === 'Doctor'){
             if(!speciality){
                 return res.status(400).json({ message: "Speciality is required for doctors" });
             }
@@ -61,32 +86,34 @@ export const register = async (req, res) => {
     }
 };
 
-//to login existing user after validating credentials
+/* To login existing user after validating credentials */
 export const login = async(req,res)=>{
-    const {email} = req.body;
+    const {email, password} = req.body;
+
+    if(!email || !password) {
+        return res.staus(400).json({ message:"Please enter all the details" });
+    }
 
     try {
         let user = null;
 
         const foundUser = await User.findOne({email});
-        if(foundUser) {
-            user = foundUser;
+        if(!foundUser) {    //check if user exist with this email or not
+            return res.status(404).json({ message: "User with this email does not exist" }); 
         }
-
-        //check if user exist or not
-        if(!user){
-            return res.status(404).json({ message: "User not found" });
-        }
-    
+        
+        user = foundUser;
+       
         //compare password
         const isPasswordMatch = await bcrypt.compare(req.body.password, foundUser.password);
         if(!isPasswordMatch){
-            return res.status(400).json({ status:false, message: "Invalid credentials" });
+            return res.status(400).json({ status:false, message: "Incorrect password" });
         }
 
         //get token
         const token = generateToken(user);
 
+        /* to exclude password and user type info from user doc */
         const {password, user_type, ...rest} = user._doc;
 
         return res.status(200).json({ status:true, message: "Successfully login", token, data:{...rest}, role:user_type });

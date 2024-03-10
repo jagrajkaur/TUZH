@@ -11,8 +11,8 @@ import heroImg03 from "../assets/images/hero-img03.png";
 const Home = () => {
     return (
         <>
-            {/* ========= hero section ============ */}
-            <>
+            {/* ========= START :: hero section ============ */}
+            
                 <section className="hero__section pt-[60px] 2xl:h-[800px]">
                     <div className="container">
                         <div className="flex flex-col lg:flex-row gap-[90px] items-center justify-between">
@@ -68,7 +68,8 @@ const Home = () => {
                         </div>
                     </div>
                 </section>
-            </>
+                {/* ========= END :: hero section ============ */}
+            
         </>
     );
 };
