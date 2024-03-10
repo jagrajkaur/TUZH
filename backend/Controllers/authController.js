@@ -21,9 +21,10 @@ const generateToken = user => {
 
 /* To register a new user after validating the inputs */
 export const register = async (req, res) => {
-    const {first_name, last_name, date_of_birth, gender, address, email, password, confirmPassword, user_type, speciality} = req.body;
-
+    const {first_name, last_name, date_of_birth, gender, address, email, password, confirm_password, user_type, speciality} = req.body;
     //validate user inputs
+    console.log(confirm_password);
+    console.log(password)
     if (first_name.length <= 2) {
         return res.status(403).json({ message: "First name must be atleast 3 characters" });
     }
@@ -40,7 +41,7 @@ export const register = async (req, res) => {
         return res.status(403).json({ message: "Password should be between 6-20 characters and must have at least one numeric and one uppercase." })
     }
 
-    if(confirmPassword != password) {
+    if(confirm_password != password) {
         return res.status(403).json({ message: "Both the passwords don't match" });
     }
 
@@ -101,9 +102,15 @@ export const login = async(req,res)=>{
         if(!foundUser) {    //check if user exist with this email or not
             return res.status(404).json({ message: "User with this email does not exist" }); 
         }
+
+        
         
         user = foundUser;
-       
+        // Check if the user is approved
+        if (foundUser.isApproved === "Pending") {
+          return res.status(403).json({ message: "Your request is pending. Try again later" });
+        }
+
         //compare password
         const isPasswordMatch = await bcrypt.compare(req.body.password, foundUser.password);
         if(!isPasswordMatch){
@@ -119,6 +126,7 @@ export const login = async(req,res)=>{
         return res.status(200).json({ status:true, message: "Successfully login", token, data:{...rest}, role:user_type });
 
     } catch (err) {
+        console.log(err)
         return res.status(500).json({ status:false, message: "Failed to login" });
     }
 }

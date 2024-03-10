@@ -21,7 +21,7 @@ app.post('/register', async (req, res) => {
   try {
     // Extract user data from request body
     const { firstName, lastName, age, gender, email, password, confirmPassword, registerAs, qualification, securityQuestion, securityAnswer } = req.body;
-
+    console.log (req.body);
     // Check if password and confirm password match
     if (password !== confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match" });
