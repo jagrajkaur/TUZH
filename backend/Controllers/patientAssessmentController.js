@@ -27,7 +27,7 @@ export const savePatientAssessment = async(req,res)=>{
         });
 
         const savedAssesment = await newAssesment.save();
-        res.status(200).json({ success:true, message: "Assesment successfully saved", savedAssesment });
+        res.status(200).json({ success:true, message: "Assesment response saved successfully", savedAssesment });
     } catch(err){
         console.log(err.message);
         res.status(500).json({ success:false, message: "Internal server error, please try again" });
