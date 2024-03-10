@@ -1,0 +1,42 @@
+#dashboard_container {
+    margin-bottom: 50px;
+    padding: 30px 0;
+}
+
+.wrap.wide {
+    margin: 0 auto;
+    width: 1200px;
+}
+
+#dashboard_container .inner {
+    padding: 50px 60px;
+}
+
+#dashboard_container h1 {
+    margin: 0 0 .15em;
+    font-size: 4.5em;
+    color: #237591;
+}
+
+#dashboard_container .text{
+    max-width: 700px;
+    color: #464646;
+    line-height: 1.7em;
+}
+
+#dashboard_container .text p {
+    margin: 0 0 1.5em;
+    padding: 0;
+}
+
+.answer_btn {
+    padding: 0.5rem;
+    background: #b0bec2;
+    color: #464646;
+    border-radius: 0.5rem;
+}
+
+.selected {
+    background-color: #88cfa5;
+    color: #ffffff;
+}
