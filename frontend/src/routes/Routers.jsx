@@ -21,6 +21,7 @@ const Routers = () => {
         <Route path="/contact" element={<Contact/>} />
         <Route path="/dashboard" element={<Dashboard/>} />
         <Route path="/AdminDashboard" element={<AdminDashboard/>} />
+        <Route path="/dashboard" element={user ? <Dashboard/> : <Login/>} />
     </Routes>
 };
 
