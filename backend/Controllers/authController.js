@@ -23,8 +23,6 @@ const generateToken = user => {
 export const register = async (req, res) => {
     const {first_name, last_name, date_of_birth, gender, address, email, password, confirm_password, user_type, speciality} = req.body;
     //validate user inputs
-    console.log(confirm_password);
-    console.log(password)
     if (first_name.length <= 2) {
         return res.status(403).json({ message: "First name must be atleast 3 characters" });
     }
@@ -88,45 +86,39 @@ export const register = async (req, res) => {
 };
 
 /* To login existing user after validating credentials */
-export const login = async(req,res)=>{
-    const {email, password} = req.body;
+export const login = async (req, res) => {
+    const { email, password } = req.body;
 
-    if(!email || !password) {
-        return res.staus(400).json({ message:"Please enter all the details" });
+    if (!email || !password) {
+        return res.status(400).json({ message: "Please enter all the details" });
     }
 
     try {
-        let user = null;
+        const foundUser = await User.findOne({ email });
 
-        const foundUser = await User.findOne({email});
-        if(!foundUser) {    //check if user exist with this email or not
-            return res.status(404).json({ message: "User with this email does not exist" }); 
+        if (!foundUser) {
+            return res.status(404).json({ message: "User with this email does not exist" });
         }
 
-        
-        
-        user = foundUser;
         // Check if the user is approved
         if (foundUser.isApproved === "Pending") {
-          return res.status(403).json({ message: "Your request is pending. Try again later" });
+            return res.status(403).json({ message: "Your request is pending. Try again later" });
         }
 
-        //compare password
-        const isPasswordMatch = await bcrypt.compare(req.body.password, foundUser.password);
-        if(!isPasswordMatch){
-            return res.status(400).json({ status:false, message: "Incorrect password" });
+        // Compare password
+        const isPasswordMatch = await bcrypt.compare(password, foundUser.password);
+        if (!isPasswordMatch) {
+            return res.status(400).json({ status: false, message: "Incorrect password" });
         }
 
-        //get token
-        const token = generateToken(user);
+        // Generate token
+        const token = generateToken(foundUser);
 
-        /* to exclude password and user type info from user doc */
-        const {password, user_type, ...rest} = user._doc;
-
-        return res.status(200).json({ status:true, message: "Successfully login", token, data:{...rest}, role:user_type });
+        // Send user_type along with response
+        return res.status(200).json({ status: true, message: "Successfully login", token, user_type: foundUser.user_type });
 
     } catch (err) {
-        console.log(err)
-        return res.status(500).json({ status:false, message: "Failed to login" });
+        console.log(err);
+        return res.status(500).json({ status: false, message: "Failed to login" });
     }
 }

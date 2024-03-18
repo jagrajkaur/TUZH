@@ -44,13 +44,26 @@ const Login = () => {
                 payload:{
                     user:result.data,
                     token:result.token,
-                    role:result.role
+                    role:result.user_type
                 },
             });
 
             setLoading(false);
             toast.success(result.message);
-            navigate("/home");
+            // redirecting to appropriate dashboards
+            if (result.user_type === "Patient"){
+                navigate("/dashboard")
+            }
+            else if(result.user_type === "Doctor"){
+                console.log("Doctor Dashboard");
+                // navigate("/DoctorDashboard"));
+            }
+            else if(result.user_type === "Admin"){
+                navigate("/AdminDashboard");
+            }
+            else{
+                navigate("/home");
+            }
 
         } catch (err) {
             toast.error(err.message);

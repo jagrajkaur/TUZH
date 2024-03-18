@@ -3,6 +3,7 @@ import Login from "../pages/Login1";
 import Signup from "../pages/Signup1";
 import Contact from "../pages/Contact";
 import Dashboard from "../pages/Dashboard";
+import AdminDashboard from "../pages/AdminDashboard";
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
@@ -19,6 +20,7 @@ const Routers = () => {
         <Route path="/register" element={<Signup/>} />
         <Route path="/contact" element={<Contact/>} />
         <Route path="/dashboard" element={<Dashboard/>} />
+        <Route path="/AdminDashboard" element={<AdminDashboard/>} />
     </Routes>
 };
 
