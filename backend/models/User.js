@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     }},
     isApproved: {
         type: String,
-        enum: ["Pending", "Approved", "Cancelled"],
+        enum: ["Pending", "Approved", "Rejected"],
         default: function(){
             return this.user_type === 'Doctor' ? "Pending" : undefined;   // Default value only if user_type is 'Doctor'
         },

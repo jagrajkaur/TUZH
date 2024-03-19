@@ -21,23 +21,26 @@ const generateToken = user => {
 
 /* To register a new user after validating the inputs */
 export const register = async (req, res) => {
-    const {first_name, last_name, date_of_birth, gender, address, email, password, user_type, speciality} = req.body;
-
+    const {first_name, last_name, date_of_birth, gender, address, email, password, confirm_password, user_type, speciality} = req.body;
     //validate user inputs
     if (first_name.length <= 2) {
-        return res.status(403).json({ "error": "First name must be atleast 3 characters" });
+        return res.status(403).json({ message: "First name must be atleast 3 characters" });
     }
 
     if (!email.length) {
-        return res.status(403).json({ "error": "Email is mandatory" });
+        return res.status(403).json({ message: "Email is mandatory" });
     }
 
     if (!emailRegex.test(email)) {
-        return res.status(403).json({ "error": "Invalid email or format. Email should be in format abc@xyz.com" });
+        return res.status(403).json({ message: "Invalid email or format. Email should be in format abc@xyz.com" });
     }
 
     if (!passwordRegex.test(password)) {
-        return res.status(403).json({ "error": "Password should be between 6-20 characters and must have at least one numeric and one uppercase." })
+        return res.status(403).json({ message: "Password should be between 6-20 characters and must have at least one numeric and one uppercase." })
+    }
+
+    if(confirm_password != password) {
+        return res.status(403).json({ message: "Both the passwords don't match" });
     }
 
     try{
@@ -45,7 +48,7 @@ export const register = async (req, res) => {
 
         //check if user exist
         if(user){
-            return res.status(400).json({message:'User already exists'});
+            return res.status(400).json({ message: "User with the same email already exists" });
         }
 
         //hashing password for security using bcrypt js library
@@ -83,36 +86,39 @@ export const register = async (req, res) => {
 };
 
 /* To login existing user after validating credentials */
-export const login = async(req,res)=>{
-    const {email} = req.body;
+export const login = async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: "Please enter all the details" });
+    }
 
     try {
-        let user = null;
+        const foundUser = await User.findOne({ email });
 
-        const foundUser = await User.findOne({email});
-        if(foundUser) {
-            user = foundUser;
+        if (!foundUser) {
+            return res.status(404).json({ message: "User with this email does not exist" });
         }
 
-        //check if user exist or not
-        if(!user){
-            return res.status(404).json({ message: "User not found" });
-        }
-    
-        //compare password
-        const isPasswordMatch = await bcrypt.compare(req.body.password, foundUser.password);
-        if(!isPasswordMatch){
-            return res.status(400).json({ status:false, message: "Invalid credentials" });
+        // Check if the user is approved
+        if (foundUser.isApproved === "Pending") {
+            return res.status(403).json({ message: "Your request is pending. Try again later" });
         }
 
-        //get token
-        const token = generateToken(user);
+        // Compare password
+        const isPasswordMatch = await bcrypt.compare(password, foundUser.password);
+        if (!isPasswordMatch) {
+            return res.status(400).json({ status: false, message: "Incorrect password" });
+        }
 
-        const {password, user_type, ...rest} = user._doc;
+        // Generate token
+        const token = generateToken(foundUser);
 
-        return res.status(200).json({ status:true, message: "Successfully login", token, data:{...rest}, role:user_type });
+        // Send user_type along with response
+        return res.status(200).json({ status: true, message: "Successfully login", token, user_type: foundUser.user_type });
 
     } catch (err) {
-        return res.status(500).json({ status:false, message: "Failed to login" });
+        console.log(err);
+        return res.status(500).json({ status: false, message: "Failed to login" });
     }
 }
