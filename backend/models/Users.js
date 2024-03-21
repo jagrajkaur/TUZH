@@ -1,19 +1,50 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 
+// Defining the schema for the User model
 const userSchema = new mongoose.Schema({
-    first_name: { type: String, required: true, minlength: [3, 'First name must be at least 3 characters long'] },
-    last_name: { type: String, required: true },
-    date_of_birth: { type: Date, required: true },
-    gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
-    address: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    user_type: { 
-        type: String, 
-        enum: ['Doctor', 'Patient', 'Admin'], 
-        required: true 
-    },
-    speciality: { type: String } // Only applicable for user_type 'Doctor'
+  firstName: {
+    type: String,
+    required: true
+  },
+  lastName: {
+    type: String,
+    required: true
+  },
+  age: {
+    type: Number,
+    required: true
+  },
+  gender: {
+    type: String,
+    enum: ['male', 'female'],
+    required: true
+  },
+  address: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  registerAs: {
+    type: String,
+    enum: ['Patient', 'Doctor'],
+    required: true
+  },
+  qualification: {
+    type: String,
+    enum: ['MD', 'PhD', 'MBBS', 'MS', 'DM']
+  }
 });
 
-export default mongoose.model("User", userSchema);
+// Creating the User model using the schema
+const User = mongoose.model('User', userSchema);
+
+// Exporting the User model
+module.exports = User;
