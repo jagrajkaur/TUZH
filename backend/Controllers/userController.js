@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import redisClient from '../redis.js';
 
 /* @author: Jagraj Kaur
    @FileDescription: Implemented function to update, delete and fetch users from the database.
@@ -9,8 +10,9 @@ export const updateUser = async(req,res)=>{
 
     try{
         const updatedUser = await User.findByIdAndUpdate(id, {$set: req.body}, {new:true});
+        await redisClient.del('cachedUsers'); // Clear cached users after update
 
-        res.status(200).json({success:true, message:"Successfully updated", data:updateUser});
+        res.status(200).json({success:true, message:"Successfully updated", data:updatedUser});
     } catch(err) {
         res.status(500).json({success:false, message:"Failed to update"});
     }
@@ -21,6 +23,7 @@ export const deleteUser = async(req,res)=>{
 
     try{
         await User.findByIdAndDelete(id);
+        await redisClient.del('cachedUsers'); // Clear cached users after delete
 
         res.status(200).json({success:true, message:"Successfully deleted"});
     } catch(err) {
@@ -33,6 +36,8 @@ export const getSingleUser = async(req,res)=>{
 
     try{
         const user = await User.findById(id).select("-password");   // to exclude the password field
+        // Cache the user data with a specific key (e.g., user ID)
+        await redisClient.set(`cachedUser:${id}`, JSON.stringify(user), 'EX', 3600); // Cache for 1 hour
 
         res.status(200).json({success:true, message:"User found", data:user});
     } catch(err) {
@@ -42,6 +47,12 @@ export const getSingleUser = async(req,res)=>{
 
 export const getAllUser = async(req,res)=>{
     try{
+        const cachedUsers = await redisClient.get('cachedUsers');
+        if(cachedUsers){
+            // If users data is cached, return it from Redis
+            return res.status(200).json({ success:true, message:"Users found", data: JSON.parse(cachedUsers) });
+        }
+
         let query = {};
         if(req.query.user_type && req.query.user_type.toLowerCase() === 'doctor'){
             query.user_type = 'Doctor',
@@ -52,6 +63,9 @@ export const getAllUser = async(req,res)=>{
         if(users.length === 0) {
             return res.status(404).json({ success:false, message:"No user found" });
         }
+
+        //Cache the users data
+        await redisClient.set('cachedUsers', JSON.stringify(users), 'EX', 3600);   //Cache for one hour
 
         res.status(200).json({success:true, message:"Users found", data:users});
     } catch(err) {
