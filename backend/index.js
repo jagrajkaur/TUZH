@@ -7,6 +7,7 @@ import authRoute from "./Routes/auth.js";
 import userRoute from "./Routes/user.js";
 import patientAssessmentRoute from "./Routes/patientAssessment.js";
 import adminRoute from "./Routes/admin.js";
+import mytask from "./Routes/mytask.js";
 
 
 dotenv.config();
@@ -50,6 +51,7 @@ app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/assessments', patientAssessmentRoute);
 app.use('/api/v1/admin',adminRoute);
+app.use('api/v1/mytask', mytask);
 
 app.listen(port, () => {
     //connectDB();
