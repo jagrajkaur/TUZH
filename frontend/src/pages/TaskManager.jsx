@@ -7,7 +7,7 @@ import './mytask.css'; // Import CSS file
 
 const TaskDashboard = () => {
   const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState({ description: '', duration: '', status: '', patient_id: '' });
+  const [newTask, setNewTask] = useState({ description: '', duration: '', status: '0', patient_id: 0 });
 
   useEffect(() => {
     fetchTasks();
@@ -25,7 +25,7 @@ const TaskDashboard = () => {
   const handleAddTask = async () => {
     try {
       await axios.post('your-backend-api-url/tasks', newTask);
-      setNewTask({ description: '', duration: '', status: '', patient_id: '' });
+      setNewTask({ description: '', duration: '', status: '0', patient_id: 0 });
       fetchTasks();
     } catch (error) {
       console.error('Error adding task:', error);
@@ -74,10 +74,10 @@ const TaskDashboard = () => {
           onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
         />
         <input
-          type="text"
+          type="number"
           placeholder="Patient ID"
           value={newTask.patient_id}
-          onChange={(e) => setNewTask({ ...newTask, patient_id: e.target.value })}
+          onChange={(e) => setNewTask({ ...newTask, patient_id: parseInt(e.target.value) })}
         />
         <button onClick={handleAddTask}>Add Task</button>
       </div>
