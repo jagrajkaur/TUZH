@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { BASE_URL } from "../config";
 
 const AdminDashboard = () => {
   const [pendingDoctors, setPendingDoctors] = useState([]);
@@ -12,7 +13,7 @@ const AdminDashboard = () => {
 
   const fetchPendingDoctors = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/v1/admin/pending-doctors');
+      const response = await axios.get(`${BASE_URL}/admin/pending-doctors`);
       setPendingDoctors(response.data);
     } catch (error) {
       console.error('Error fetching pending doctors:', error);
@@ -21,7 +22,7 @@ const AdminDashboard = () => {
 
   const handleApprove = async (userId) => {
     try {
-      await axios.put(`http://localhost:5000/api/v1/admin/users/${userId}/approve`);
+      await axios.put(`${BASE_URL}/admin/users/${userId}/approve`);
       // Assuming you want to update the UI after approval, you may re-fetch the pending doctors list
       fetchPendingDoctors();
     } catch (error) {
@@ -31,7 +32,7 @@ const AdminDashboard = () => {
 
   const handleReject = async (userId) => {
     try {
-      await axios.put(`http://localhost:5000/api/v1/admin/users/${userId}/reject`);
+      await axios.put(`${BASE_URL}/admin/users/${userId}/reject`);
       // Assuming you want to update the UI after rejection, you may re-fetch the pending doctors list
       fetchPendingDoctors();
     } catch (error) {
