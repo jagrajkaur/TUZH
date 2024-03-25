@@ -42,7 +42,7 @@ const DoctorDashboard = () => {
         console.log('Creating appointment with data:', appointmentData);
     
         try {
-            const response = await axios.post(`${BASE_URL}/doctor/createAppointment`, appointmentData);
+            const response = await axios.post(`${BASE_URL}/appointment/createAppointment`, appointmentData);
             console.log('Appointment created:', response.data);
             // Reset form fields after successful submission
             setAppointmentDate('');
