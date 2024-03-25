@@ -103,6 +103,15 @@ export const login = async(req,res)=>{
         }
         
         user = foundUser;
+
+        // Check if the user is approved
+        if (user.isApproved === "Pending") {
+            return res.status(403).json({ message: "Your request is pending. Try again later" });
+        }
+
+        if (user.isApproved === "Rejected") {
+            return res.status(403).json({ message: "Your request was Rejected." });
+        }
        
         //compare password
         const isPasswordMatch = await bcrypt.compare(req.body.password, foundUser.password);
