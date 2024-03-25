@@ -76,3 +76,93 @@ export const requestAppointment = async (req, res) => {
     }
 }
 
+export const fetchAppointmentsByDoctor  = async (req, res) => {
+    try {
+        // Find all appointments by the doctorId
+        const appointments = await Appointment.find({ doctor_id: req.params.id });
+        res.json(appointments);
+    } catch (error) {
+        console.error('Error fetching appointments:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+export const removeAppointment = async (req, res) => {
+    try {
+        // Find the appointment by id and delete it
+        await Appointment.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Appointment deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting appointment:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+export const getPendingAppointments = async (req, res) => {
+    const  doctorId  = req.params.id;
+    try {
+        // Find all appointments for the doctor with status 'pending'
+        const appointments = await Appointment.find({ doctor_id: doctorId, status: 'pending' });
+
+        // Map through appointments and populate patient email
+        const populatedAppointments = await Promise.all(appointments.map(async appointment => {
+            const patient = await User.findById(appointment.patient_id);
+            const patientEmail = patient.email;
+            return { ...appointment.toObject(), patientEmail };
+        }));
+
+        res.json(populatedAppointments);
+    } catch (error) {
+        console.error('Error fetching pending appointments:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+export const acceptRequest = async (req, res) => {
+    const  appointmentId  = req.params.id;
+
+    try {
+        // Find the appointment by ID
+        const appointment = await Appointment.findById(appointmentId);
+
+        // If appointment is not found or already accepted/rejected, return error
+        if (!appointment || appointment.status !== 'pending') {
+            return res.status(404).json({ error: 'Appointment not found or already processed' });
+        }
+
+        // Update the status to 'accepted'
+        appointment.status = 'booked';
+
+        // Save the updated appointment
+        await appointment.save();
+
+        res.json({ message: 'Appointment request accepted successfully' });
+    } catch (error) {
+        console.error('Error accepting appointment request:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+export const rejectRequest = async (req, res) => {
+    const  appointmentId  = req.params.id;
+
+    try {
+        // Find the appointment by ID
+        const appointment = await Appointment.findById(appointmentId);
+
+        // If appointment is not found or already accepted/rejected, return error
+        if (!appointment || appointment.status !== 'pending') {
+            return res.status(404).json({ error: 'Appointment not found or already processed' });
+        }
+
+        // Update the status to 'accepted'
+        appointment.status = 'cancelled';
+
+        // Save the updated appointment
+        await appointment.save();
+
+        res.json({ message: 'Appointment request cancelled' });
+    } catch (error) {
+        console.error('Error accepting appointment request:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
