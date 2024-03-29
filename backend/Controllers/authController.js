@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import * as taskController from '../Controllers/mytaskcontroller.js';
 
 /* @author: Jagraj Kaur
    @FileDescription: Implemented function to register new user(patient/doctor)
@@ -21,7 +22,7 @@ const generateToken = user => {
 
 /* To register a new user after validating the inputs */
 export const register = async (req, res) => {
-    const {first_name, last_name, date_of_birth, gender, address, email, password, confirmPassword, user_type, speciality} = req.body;
+    const {first_name, last_name, date_of_birth, gender, address, email, password, confirm_password, user_type, speciality} = req.body;
 
     //validate user inputs
     if (first_name.length <= 2) {
@@ -40,7 +41,7 @@ export const register = async (req, res) => {
         return res.status(403).json({ message: "Password should be between 6-20 characters and must have at least one numeric and one uppercase." })
     }
 
-    if(confirmPassword != password) {
+    if(confirm_password != password) {
         return res.status(403).json({ message: "Both the passwords don't match" });
     }
 
@@ -76,7 +77,12 @@ export const register = async (req, res) => {
         }
 
         //Save user to database
-        await user.save();
+        const newUser = await user.save();
+
+        // To save the pre-defined tasks for new patient
+        if(newUser.user_type === 'Patient') {
+            await taskController.savePredefinedTasks();
+        }
 
         res.status(200).json({ success:true, message: "User registered successfully" });
 

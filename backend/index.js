@@ -23,26 +23,20 @@ app.get('/', (req,res) => {
     res.send("API is working");
 });
 
-// Connect to MongoDB
-mongoose.connect("mongodb://127.0.0.1:27017/TUZH")
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("MongoDB connection error:", err));
-
-
 // database connection
-// mongoose.set('strictQuery', false);
-// const connectDB = async () => {
-//     try{
-//         await mongoose.connect(process.env.MONGO_URL, {
-//             useNewUrlParser: true,
-//             useUnifiedTopology: true
-//         });
+mongoose.set('strictQuery', false);
+const connectDB = async () => {
+    try{
+        await mongoose.connect(process.env.MONGO_URL, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
 
-//         console.log("MongoDB database is connected");
-//     } catch (err) {
-//         console.log("MongoDB database connection is failed");
-//     }
-// }
+        console.log("MongoDB database is connected");
+    } catch (err) {
+        console.log("MongoDB database connection is failed");
+    }
+}
 
 // middleware 
 app.use(express.json());
@@ -56,6 +50,6 @@ app.use('/api/v1/appointment', appointmentRoute);
 app.use('/api/v1/mytask', mytask);
 
 app.listen(port, () => {
-    // connectDB();
+    connectDB();
     console.log("Server is running on port" + port);
 });

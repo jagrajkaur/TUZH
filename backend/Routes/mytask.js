@@ -8,7 +8,6 @@ const router = express.Router();
 router.post('/',authenticate, restrict(["Patient"]), taskController.createTask);
 
 // Route to get all tasks
-console.log("Inside routes");
 router.get('/', taskController.getAllTasks);
 
 // Route to get a task by ID
@@ -18,7 +17,7 @@ router.get('/:taskId', taskController.getTaskById);
 router.put('/:taskId', taskController.updateTask);
 
 // Route to seed the database with predefined tasks
-router.get('/seed', taskController.seedPredefinedTasks);
+router.post('/savePredefinedTasks', taskController.savePredefinedTasks);
 
 // Route to delete a task by ID
 //router.delete('/tasks/:taskId', taskController.deleteTask);
