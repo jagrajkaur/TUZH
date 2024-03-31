@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -22,30 +23,33 @@ const generateToken = user => {
 
 /* To register a new user after validating the inputs */
 export const register = async (req, res) => {
-    const {first_name, last_name, date_of_birth, gender, address, email, password, confirm_password, user_type, speciality} = req.body;
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    //validate user inputs
-    if (first_name.length <= 2) {
-        return res.status(403).json({ message: "First name must be atleast 3 characters" });
-    }
+    try {
+        const {first_name, last_name, date_of_birth, gender, address, email, password, confirm_password, user_type, speciality} = req.body;
 
-    if (!email.length) {
-        return res.status(403).json({ message: "Email is mandatory" });
-    }
+        //validate user inputs
+        if (first_name.length <= 2) {
+            return res.status(403).json({ message: "First name must be atleast 3 characters" });
+        }
 
-    if (!emailRegex.test(email)) {
-        return res.status(403).json({ message: "Invalid email or format. Email should be in format abc@xyz.com" });
-    }
+        if (!email.length) {
+            return res.status(403).json({ message: "Email is mandatory" });
+        }
 
-    if (!passwordRegex.test(password)) {
-        return res.status(403).json({ message: "Password should be between 6-20 characters and must have at least one numeric and one uppercase." })
-    }
+        if (!emailRegex.test(email)) {
+            return res.status(403).json({ message: "Invalid email or format. Email should be in format abc@xyz.com" });
+        }
 
-    if(confirm_password != password) {
-        return res.status(403).json({ message: "Both the passwords don't match" });
-    }
+        if (!passwordRegex.test(password)) {
+            return res.status(403).json({ message: "Password should be between 6-20 characters and must have at least one numeric and one uppercase." })
+        }
 
-    try{
+        if(confirm_password != password) {
+            return res.status(403).json({ message: "Both the passwords don't match" });
+        }
+
         let user = await User.findOne({email});
 
         //check if user exist
@@ -76,18 +80,27 @@ export const register = async (req, res) => {
             user.speciality = speciality;
         }
 
-        //Save user to database
-        const newUser = await user.save();
+        //Save user to database within transaction
+        const newUser = await user.save({ session });
 
         // To save the pre-defined tasks for new patient
         if(newUser.user_type === 'Patient') {
-            await taskController.savePredefinedTasks();
+            try {
+                await taskController.savePredefinedTasks(newUser._id, { session });
+            } catch (err) {
+                console.log(err.message);
+                res.status(500).json({ message: "Error saving predefined tasks" });
+            }
         }
 
-        res.status(200).json({ success:true, message: "User registered successfully" });
+        await session.commitTransaction(); // Commit the transaction
+        session.endSession();
 
+        res.status(200).json({ success:true, message: "User registered successfully" });
     } catch(err){
         console.log(err.message);
+        await session.abortTransaction(); // Rollback the transaction if an error occurs
+        session.endSession();
         res.status(500).json({ success:false, message: "Internal server error, Try again" });
     }
 };
