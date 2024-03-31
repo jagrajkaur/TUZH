@@ -7,8 +7,8 @@ const router = express.Router();
 // Route to create a new task
 router.post('/',authenticate, restrict(["Patient"]), taskController.createTask);
 
-// Route to get all tasks
-router.get('/', taskController.getAllTasks);
+// Route to get all tasks by patient ID
+router.get('/patient/:patientId', taskController.getAllTasks);
 
 // Route to get a task by ID
 router.get('/:taskId', taskController.getTaskById);

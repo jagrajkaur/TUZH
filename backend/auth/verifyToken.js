@@ -38,18 +38,25 @@ export const authenticate = async(req, res, next) => {
 /* JK - To restrict the user based on the specified roles only */
 export const restrict = roles => async(req,res,next)=>{
     const userId = req.userId;
+    
+    try {
+        // Find the user by ID
+        const user = await User.findById(userId);
 
-    let user;
+        // Check if user is not found
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        
+        // Check if user's role is not included in the allowed roles
+        if (!roles.includes(user.user_type)) {
+            return res.status(401).json({ success: false, message: "You're not authorized" });
+        }
 
-    const foundUser = await User.findById(userId);
-
-    if(foundUser){
-        user = foundUser;
+        //  must call the next function after authorization to pass the control to next function 
+        next();
+    } catch (error) {
+        console.error(err);
+        return res.status(500).json({ success: false, message: "Internal server error" });   
     }
-
-    if(!roles.includes(user.user_type)){
-        return res.status(401).json({success:false, message:"You're not authorized"});
-    }
-
-    next();     // must call the next function after authorization to pass the control to next function
 }
