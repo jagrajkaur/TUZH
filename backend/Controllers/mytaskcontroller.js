@@ -129,6 +129,7 @@ export const updateTask = async (req, res) => {
 
     // Remove the cached task from Redis
     await redisClient.del(`cachedTask:${taskId}`);
+    await redisClient.del(`myTasks:${updatedTask.patient_id}`);
 
     res.status(200).json({ success:true, message:"Successfully updated", data:updatedTask });
   } catch (error) {
