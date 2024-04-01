@@ -12,6 +12,12 @@ const MyAppointments = () => {
         fetchAppointments();
     }, []);
 
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    };
+    
+
     const formatTime = (timeString) => {
         const [hours, minutes] = timeString.split(':');
         const hour = parseInt(hours, 10) % 12 || 12;
@@ -62,7 +68,7 @@ const MyAppointments = () => {
                     <ul>
                         {approvedAppointments.map(appointment => (
                             <li key={appointment._id} className="flex items-center justify-between bg-white rounded-lg shadow-md p-4 mb-2">
-                                <span>{new Date(appointment.appointment_date).toLocaleDateString()} - {formatTime(appointment.start_time)} to {formatTime(appointment.end_time)}</span>
+                                <span>{formatDate(appointment.appointment_date)} - {formatTime(appointment.start_time)} to {formatTime(appointment.end_time)}</span>
                                 <div>
                                 <button onClick={() => markAsCompleted(appointment._id)} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Mark as Completed</button>
                                 &nbsp; &nbsp;<button onClick={() => cancelAppointment(appointment._id)} className="bg-red-500 text-white px-4 py-2 rounded mr-2 hover:bg-red-600">Cancel</button> 
