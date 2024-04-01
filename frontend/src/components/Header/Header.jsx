@@ -28,38 +28,7 @@ const Header = () => {
     });
   };
 
-  const handleLogout = () => {
-    dispatch({ type: "LOGOUT" });
-    navigate("/");
-  };
-
-  useEffect(() => {
-    handleStickyHeader();
-
-    return () =>
-      window.removeEventListener("scroll", handleStickyHeader);
-  }, []);
-
-  const toggleMenu = () => menuRef.current.classList.toggle("show__menu");
-
-  // Define menu items based on user role
-  const getMenuItems = () => {
-    if (role === "Doctor") {
-      // Return admin menu items
-      return [
-        { path: "dashboard", display: "Dashboard" },
-        { path: "/doctor/addAvailablity", display: "Add Availability" },
-        { path: "/doctor/myAvailability", display: "My Availabilities" },
-        { path: "/doctor/myAppointments", display: "My Appointments" },
-        { path: "/doctor/pendingRequests", display: "Appointment Requests" },
-      ];
-    } else {
-      // Return default menu items for other roles
-      return navLinks;
-    }
-  };
-
-  const menuItems = getMenuItems();
+  
 
     const navLinks = [
         {
@@ -83,6 +52,43 @@ const Header = () => {
             display:'Contact'
         },
     ].filter(Boolean); // Filter out null values
+
+    const getMenuItems = () => {
+      if (role === "Doctor") {
+        // Return admin menu items
+        return [
+          { path: "dashboard", display: "Dashboard" },
+          { path: "/doctor/addAvailablity", display: "Add Availability" },
+          { path: "/doctor/myAvailability", display: "My Availabilities" },
+          { path: "/doctor/myAppointments", display: "My Appointments" },
+          { path: "/doctor/pendingRequests", display: "Appointment Requests" },
+        ];
+      } else {
+        // Return default menu items for other roles
+        return navLinks;
+      }
+    };
+
+    const menuItems = getMenuItems();
+
+  const handleLogout = () => {
+    dispatch({ type: "LOGOUT" });
+    navigate("/");
+  };
+
+  useEffect(() => {
+    handleStickyHeader();
+
+    return () =>
+      window.removeEventListener("scroll", handleStickyHeader);
+  }, []);
+
+  const toggleMenu = () => menuRef.current.classList.toggle("show__menu");
+
+  // Define menu items based on user role
+  
+
+  
 
   return (
     <header className="header flex item-center" ref={headerRef}>

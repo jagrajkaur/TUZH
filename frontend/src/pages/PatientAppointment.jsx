@@ -33,12 +33,16 @@ const PatientAppointments = () => {
     };
 
     const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
+    
 
     const formatTime = (timeString) => {
-        return new Date('1970-01-01T' + timeString + 'Z').toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const [hours, minutes] = timeString.split(':');
+        const hour = parseInt(hours, 10) % 12 || 12;
+        const ampm = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
+        return `${hour}:${minutes} ${ampm}`;
     };
 
     const getStatusColor = (status) => {
