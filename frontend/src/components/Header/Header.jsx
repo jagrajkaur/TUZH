@@ -5,28 +5,9 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { BiMenu } from "react-icons/bi";
 import { authContext } from "../../context/AuthContext";
 
-const navLinks = [
-  {
-    path: "/home",
-    display: "Home",
-  },
-  {
-    path: "/mytasks",
-    display: "My Tasks",
-  },
-  {
-    path: "/bookappointment",
-    display: "Book Appointment",
-  },
-  {
-    path: "/PatientAppointments",
-    display: "My Appointment",
-  },
-  {
-    path: "/contact",
-    display: "Contact",
-  },
-];
+/* @author: Jagraj Kaur
+   @FileDescription: To render the Header component
+*/
 
 const Header = () => {
   const headerRef = useRef(null);
@@ -80,10 +61,34 @@ const Header = () => {
 
   const menuItems = getMenuItems();
 
+    const navLinks = [
+        {
+            path:'/home',
+            display:'Home'
+        },
+        token && role && role === "Patient" ? {
+            path:'/mytasks',
+            display:'My Tasks'
+        } : null,
+        {
+            path:'/bookappointment',
+            display:'Book Appointment'
+        },
+        {
+          path: "/PatientAppointments",
+          display: "My Appointment",
+        },
+        {
+            path:'/contact',
+            display:'Contact'
+        },
+    ].filter(Boolean); // Filter out null values
+
   return (
     <header className="header flex item-center" ref={headerRef}>
       <div className="container">
         <div className="flex items-center justify-between">
+           {/* ======== logo ========= */}
           <div>
             <img src={logo} alt="" className="w-full h-16" />
           </div>

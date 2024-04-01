@@ -11,6 +11,7 @@ import MySchedule from "../pages/MySchedule";
 import RequestedAppointments from "../pages/RequestedAppointments";
 import MyAppointments from "../pages/MyAppointments";
 import PatientAppointments from "../pages/PatientAppointment";
+import MyTasks from "../pages/MyTasks";
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
@@ -38,6 +39,7 @@ const Routers = () => {
         <Route path="/doctor/myAvailability" element={<MySchedule/>} />
         <Route path="/doctor/myAppointments" element={<MyAppointments/>} />
         <Route path="/doctor/pendingRequests" element={<RequestedAppointments/>} />
+        <Route path="/mytasks" element={<MyTasks/>} />
     </Routes>
 };
 
