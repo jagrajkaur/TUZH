@@ -1,5 +1,5 @@
 import express from "express";
-import { createAppointment, getAppointments, getAppointmentsWithDoctorDetails, getPatientAppointments, requestAppointment, removeAppointment, fetchAppointmentsByDoctor, getPendingAppointments, acceptRequest, rejectRequest} from "../Controllers/appointmentController.js";
+import { createAppointment, getAppointments, markComplete, cancelAppointment, lockAppointment, getAppointmentsWithDoctorDetails, getPatientAppointments, requestAppointment, removeAppointment, fetchAppointmentsByDoctor, getPendingAppointments, acceptRequest, rejectRequest} from "../Controllers/appointmentController.js";
 
 const router = express.Router();
 
@@ -14,5 +14,7 @@ router.put('/acceptRequest/:id', acceptRequest);
 router.put('/rejectRequest/:id', rejectRequest);
 router.get('/getPatientAppointments/:id', getPatientAppointments);
 router.get('/getMyAppointment/:id', getAppointmentsWithDoctorDetails)
-
+router.put('/lockAppointment', lockAppointment);
+router.put('/cancelAppointment/:id', cancelAppointment)
+router.put('/markAsCompleted/:id', markComplete);
 export default router;

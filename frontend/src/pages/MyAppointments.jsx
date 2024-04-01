@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BASE_URL } from "../config";
+import { Link } from 'react-router-dom';
 
 const MyAppointments = () => {
     // State to store approved appointments
@@ -40,18 +41,36 @@ const MyAppointments = () => {
         }
     };
 
+    // Function to mark appointment as completed
+    const markAsCompleted = async (id) => {
+        try {
+            await axios.put(`${BASE_URL}/appointment/markAsCompleted/${id}`);
+            alert("Appointment Completed Successfully!")
+            fetchAppointments();
+        } catch (error) {
+            console.error('Error marking appointment as completed:', error);
+        }
+    };
+
     return (
         <div className="flex justify-center items-center h-full">
             <div className="w-1/2 pr-4">
                 <h2 className="text-lg font-semibold mb-2">Upcoming Appointments</h2>
-                <ul>
-                    {approvedAppointments.map(appointment => (
-                        <li key={appointment._id} className="flex items-center justify-between bg-white rounded-lg shadow-md p-4 mb-2">
-                            <span>{new Date(appointment.appointment_date).toLocaleDateString()} - {formatTime(appointment.start_time)} to {formatTime(appointment.end_time)}</span>
-                            <button onClick={() => cancelAppointment(appointment._id)} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cancel</button>
-                        </li>
-                    ))}
-                </ul>
+                {approvedAppointments.length === 0 ? (
+                    <p>You have No Upcoming Appointments, <Link to="/doctor/pendingRequests" className="text-blue-500">check Pending Requests</Link></p>
+                ) : (
+                    <ul>
+                        {approvedAppointments.map(appointment => (
+                            <li key={appointment._id} className="flex items-center justify-between bg-white rounded-lg shadow-md p-4 mb-2">
+                                <span>{new Date(appointment.appointment_date).toLocaleDateString()} - {formatTime(appointment.start_time)} to {formatTime(appointment.end_time)}</span>
+                                <div>
+                                <button onClick={() => markAsCompleted(appointment._id)} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Mark as Completed</button>
+                                &nbsp; &nbsp;<button onClick={() => cancelAppointment(appointment._id)} className="bg-red-500 text-white px-4 py-2 rounded mr-2 hover:bg-red-600">Cancel</button> 
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
         </div>
     );

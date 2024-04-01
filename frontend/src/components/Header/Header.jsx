@@ -19,7 +19,7 @@ const navLinks = [
     display: "Book Appointment",
   },
   {
-    path: "/myappointment",
+    path: "/PatientAppointments",
     display: "My Appointment",
   },
   {

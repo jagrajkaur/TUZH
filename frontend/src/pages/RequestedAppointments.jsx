@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BASE_URL } from "../config";
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 const RequestedAppointments = () => {
     // State to store pending appointment requests
@@ -51,27 +52,31 @@ const RequestedAppointments = () => {
 
     return (
         <div>
-            <div className=" w-1/3 pr-4">
+            <div className="w-1/3 pr-4">
                 <h2 className="text-lg font-semibold mb-2">Booking Requests</h2>
-                <ul>
-                    {pendingRequests.map(request => (
-                        <li key={request._id} className="bg-gradient-to-b from-blue-300 to-purple-300 flex flex-col bg-white rounded-lg shadow-md p-4 mb-2">
-                            <div className="flex justify-between mb-2">
-                            <span>{request.patientEmail}</span>
-                            </div>
-                            <div className="flex justify-between mb-2">
-                                <span><b>{new Date(request.appointment_date).toLocaleDateString()}</b></span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span>{formatTime(request.start_time)} - {formatTime(request.end_time)}</span>    
-                            </div>
-                            <div>
-                                    <button onClick={() => acceptRequest(request._id)} className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600">Accept</button>
-                                    <button onClick={() => rejectRequest(request._id)} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Reject</button>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+                {pendingRequests.length === 0 ? (
+                    <p>You have no new booking requests, <Link to="/doctor/myAppointments" className="text-blue-500">check Upcoming Appointments</Link></p>
+                ) : (
+                    <ul>
+                        {pendingRequests.map(request => (
+                            <li key={request._id} className="bg-gradient-to-b from-blue-300 to-purple-300 flex flex-col bg-white rounded-lg shadow-md p-4 mb-2">
+                                <div className="flex justify-between mb-2">
+                                <span>{request.patientEmail}</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span><b>{new Date(request.appointment_date).toLocaleDateString()}</b></span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>{formatTime(request.start_time)} - {formatTime(request.end_time)}</span>    
+                                </div>
+                                <div>
+                                        <button onClick={() => acceptRequest(request._id)} className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600">Accept</button>
+                                        <button onClick={() => rejectRequest(request._id)} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Reject</button>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
         </div>
     );

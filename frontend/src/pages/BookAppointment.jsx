@@ -14,8 +14,8 @@ const BookAppointment = () => {
                 const formattedAppointments = response.data.map(appointment => ({
                     ...appointment,
                     appointmentDate: formatDate(appointment.appointmentDate),
-                    startTime: formatTime(appointment.startTime),
-                    endTime: formatTime(appointment.endTime)
+                    startTime: appointment.startTime,
+                    endTime:appointment.endTime
                 }));
                 setAppointments(formattedAppointments);
             } catch (error) {
@@ -43,25 +43,46 @@ const BookAppointment = () => {
     };
 
     const formatTime = (timeString) => {
-        return new Date('1970-01-01T' + timeString + 'Z').toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const [hours, minutes] = timeString.split(':');
+        const hour = parseInt(hours, 10) % 12 || 12;
+        const ampm = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
+        return `${hour}:${minutes} ${ampm}`;
     };
+    
 
     const handleRequestAppointment = async (appointmentId) => {
         try {
             const patientId = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user'))._id : '';
-            await axios.put(`${BASE_URL}/appointment/requestAppointment`, null, {
+            const response = await axios.put(`${BASE_URL}/appointment/lockAppointment`, null, {
                 params: { appointmentId, patientId }
             });
-            const updatedAppointments = appointments.map(appointment => {
-                if (appointment._id === appointmentId) {
-                    return { ...appointment, status: 'pending', patient_id: patientId };
-                }
-                return appointment;
-            });
-            setAppointments(updatedAppointments);
-            setHasAppointment(true); // Update hasAppointment to true after booking
+    
+            if (response.data.success) {
+                // Appointment successfully locked, proceed with booking
+                await axios.put(`${BASE_URL}/appointment/requestAppointment`, null, {
+                    params: { appointmentId, patientId }
+                });
+                const updatedAppointments = appointments.map(appointment => {
+                    if (appointment._id === appointmentId) {
+                        return { ...appointment, status: 'pending', patient_id: patientId };
+                    }
+                    return appointment;
+                });
+                setAppointments(updatedAppointments);
+                setHasAppointment(true); // Update hasAppointment to true after booking
+            } else {
+                // Appointment is already locked, show alert and refresh page
+                alert("This appointment is no longer available.");
+                window.location.reload();
+            }
         } catch (error) {
-            console.error('Error requesting appointment:', error);
+            if (error.response.status === 409) {
+                // Appointment is already locked, show alert and refresh page
+                alert("This appointment is no longer available.");
+                window.location.reload();
+            } else {
+                console.error('Error requesting appointment:', error);
+            }
         }
     };
 
@@ -85,8 +106,8 @@ const BookAppointment = () => {
                                     <p className="text-lg font-semibold">Doctor Name: {appointment.doctorName}</p>
                                     <p className="text-lg">Doctor Speciality: {appointment.doctorSpeciality}</p>
                                     <p className="text-lg">Doctor Address: {appointment.doctorAddress}</p>
-                                    <p className="text-lg">Start Time: {appointment.startTime}</p>
-                                    <p className="text-lg">End Time: {appointment.endTime}</p>
+                                    <p className="text-lg">Start Time: {formatTime(appointment.startTime)}</p>
+                                    <p className="text-lg">End Time: {formatTime(appointment.endTime)}</p>
                                     <button onClick={() => handleRequestAppointment(appointment.appointment_id)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
                                         Request Appointment
                                     </button>

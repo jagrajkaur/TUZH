@@ -170,7 +170,7 @@ export const getPatientAppointments = async (req, res) => {
 
         const  patientId  = req.params.id;
         // Check if there is any appointment with the given patient_id and status is not cancelled
-        const appointment = await Appointment.findOne({ patient_id: patientId});
+        const appointment = await Appointment.findOne({ patient_id: patientId, status: { $in: ['booked', 'pending'] }});
         
         if (appointment) {
             // Patient has an appointment already
@@ -188,25 +188,97 @@ export const getPatientAppointments = async (req, res) => {
 export const getAppointmentsWithDoctorDetails = async (req, res) => {
     try {
         const patientId = req.params.id;
-        const appointment = await Appointment.findOne({ patient_id: patientId, status: { $ne: 'new' } }).exec();
-        const docID = appointment.doctor_id;
-        const doctorDetails = await User.findOne({ _id: docID, user_type: "Doctor"})
-                .select('first_name last_name address');
+        const appointments = await Appointment.find({ patient_id: patientId, status: { $ne: 'new' } }).exec();
 
-                const appointmentWithDoctor = {
-                    _id: appointment._id,
-                    appointment_date: appointment.appointment_date,
-                    doctorName: `${doctorDetails.first_name} ${doctorDetails.last_name}`,
-                    doctorSpeciality: doctorDetails.speciality,
-                    doctorAddress: doctorDetails.address,
-                    start_time: appointment.start_time,
-                    end_time: appointment.end_time,
-                    status: appointment.status
-                };
+        // Map through appointments to fetch doctor details for each appointment
+        const appointmentsWithDoctor = await Promise.all(appointments.map(async appointment => {
+            const doctorID = appointment.doctor_id;
+            const doctorDetails = await User.findOne({ _id: doctorID, user_type: "Doctor" })
+                .select('first_name last_name address speciality');
 
-        res.json({ appointments: appointmentWithDoctor });
+            return {
+                _id: appointment._id,
+                appointment_date: appointment.appointment_date,
+                doctorName: `${doctorDetails.first_name} ${doctorDetails.last_name}`,
+                doctorSpeciality: doctorDetails.speciality,
+                doctorAddress: doctorDetails.address,
+                start_time: appointment.start_time,
+                end_time: appointment.end_time,
+                status: appointment.status
+            };
+        }));
+
+        res.json({ appointments: appointmentsWithDoctor });
     } catch (error) {
         console.error('Error fetching appointments:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+export const lockAppointment = async (req, res) => {
+    const { appointmentId, patientId } = req.query;
+    try {
+        // Check if the appointment is already locked
+        const appointment = await Appointment.findById(appointmentId);
+        if (!appointment) {
+            return res.status(404).json({ success: false, message: 'Appointment not found' });
+        }
+        
+        if (appointment.is_locked) {
+            // Appointment is already locked, return failure response
+            return res.status(409).json({ success: false, message: 'Appointment is already locked' });
+        }
+
+        // Lock the appointment
+        appointment.is_locked = true;
+        await appointment.save();
+
+        // Return success response
+        return res.status(200).json({ success: true, message: 'Appointment locked successfully' });
+    } catch (error) {
+        console.error('Error locking appointment:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+export const cancelAppointment = async (req, res) => { 
+    const appointmentId  = req.params.id;
+
+    try {
+        // Find the appointment by ID
+        const appointment = await Appointment.findById(appointmentId);
+        if (!appointment) {
+            return res.status(404).json({ success: false, message: 'Appointment not found' });
+        }
+
+        // Update appointment details
+        appointment.status = 'new'; // Change status to "new"
+        appointment.patient_id = null; // Remove patient_id
+        appointment.is_locked = false; // Remove is_locked
+        appointment.version = 0; // Remove version
+
+        // Save the updated appointment
+        await appointment.save();
+
+        // Return success response
+        return res.status(200).json({ success: true, message: 'Appointment cancelled successfully' });
+    } catch (error) {
+        console.error('Error cancelling appointment:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+export const markComplete = async (req, res) => { 
+    try {
+        const appointmentId = req.params.id;
+        // Update the status of the appointment to "completed"
+        await Appointment.findByIdAndUpdate(
+            appointmentId,
+            { $set: { status: 'completed' } }
+        );
+        res.status(200).json({ success: true, message: 'Appointment marked as completed' });
+    } catch (error) {
+        console.error('Error marking appointment as completed:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}

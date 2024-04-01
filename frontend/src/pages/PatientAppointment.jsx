@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from "../config";
 
 const PatientAppointments = () => {
     const [appointments, setAppointments] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchAppointments = async () => {
             try {
                 const patientId = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user'))._id : '';
                 const response = await axios.get(`${BASE_URL}/appointment/getMyAppointment/${patientId}`);
-                setAppointments([response.data.appointments]);
-
+                setAppointments(response.data.appointments);
             } catch (error) {
                 console.error('Error fetching appointments:', error);
             }
@@ -19,6 +20,17 @@ const PatientAppointments = () => {
 
         fetchAppointments();
     }, []);
+
+    const cancelAppointment = async (appointmentId) => {
+        try {
+            await axios.put(`${BASE_URL}/appointment/cancelAppointment/${appointmentId}`);
+            // After cancellation, show alert and navigate to the book appointment page
+            alert("Appointment has been cancelled. You need to book a new one. You will be redirected to the Book Appointments Page.");
+            navigate('/bookappointment');
+        } catch (error) {
+            console.error('Error cancelling appointment:', error);
+        }
+    };
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -51,6 +63,7 @@ const PatientAppointments = () => {
                         <th className="px-4 py-2">Doctor Name</th>
                         <th className="px-4 py-2">Address</th>
                         <th className="px-4 py-2">Status</th>
+                        <th className="px-4 py-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,6 +76,13 @@ const PatientAppointments = () => {
                             <td className="border px-4 py-2">{appointment.doctorAddress}</td>
                             <td className={`border px-4 py-2 ${getStatusColor(appointment.status)}`}>
                                 {appointment.status}
+                            </td>
+                            <td className="border px-4 py-2">
+                                {appointment.status === 'pending' && (
+                                    <button onClick={() => cancelAppointment(appointment._id)} className="text-red-500 font-semibold">
+                                        Cancel
+                                    </button>
+                                )}
                             </td>
                         </tr>
                     ))}
