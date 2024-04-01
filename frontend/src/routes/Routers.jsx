@@ -32,7 +32,7 @@ const Routers = () => {
         <Route path="/login" element={<Login/>} />
         <Route path="/bookappointment" element={user ? <BookAppointment/> : <Login/>} />
         <Route path="/contact" element={<Contact/>} />
-        <Route path="/PatientAppointments" element={<PatientAppointments/>} />
+        <Route path="/PatientAppointments" element={user ? <PatientAppointments/> : <Login/>} />
         {/* Check if user is admin, navigate to AdminDashboard if true */}
         <Route path="/dashboard" element={isAdmin ? <AdminDashboard /> : isDoctor ? <DoctorDashboard /> : user ? <Dashboard/> : <Login/>} />
         <Route path="/doctor/addAvailablity" element={<AddAvailability/>} />

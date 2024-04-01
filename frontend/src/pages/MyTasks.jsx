@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import '../styles/myTask.css';
 import { BASE_URL } from '../config';
 import { authContext } from '../context/AuthContext';
+import { toast } from "react-toastify";
 
 /* @author: Jagraj Kaur
    @FileDescription: To render the MyTasks component for logged in users (Patients)
@@ -19,7 +20,6 @@ const MyTasks = () => {
 
     // Fetch task lists based on the user ID
     const fetchTasks = async () => {
-        console.log("== FETCH TASKS LIST ==");
         try {
             const response = await fetch(`${BASE_URL}/mytask/patient/${user._id}`, {
                 headers:{
@@ -30,12 +30,9 @@ const MyTasks = () => {
             if (!response.ok) {
                 throw new Error('Failed to fetch tasks');
             }
-            console.log("== before setting the list ==");
-            console.log(tasks);
+            
             const responseData = await response.json();
             setTasks(responseData.data);
-            console.log("== after setting the list ==");
-            console.log(tasks);
         } catch (error) {
             console.error('Error fetching tasks:', error);
         }
@@ -64,6 +61,8 @@ const MyTasks = () => {
             if (!response.ok) {
                 throw new Error('Failed to add task');
             }
+            const result = await response.json();
+            toast.success(result.message);
 
             // Refresh the task list after adding the task
             fetchTasks();
@@ -76,13 +75,11 @@ const MyTasks = () => {
 
     // Function to handle updating task details
     const handleUpdateTask = async () => {
-        console.log("=== INSIDE UPDATE TASK === ");
         const updatedTask = {
             description: editTaskName,
             duration: editTaskDuration,
             status: editTaskStatus
         };
-        console.log(updatedTask);
 
         try {
             const response = await fetch(`${BASE_URL}/mytask/${editTaskId}`, {
@@ -97,6 +94,8 @@ const MyTasks = () => {
             if (!response.ok) {
                 throw new Error('Failed to update task');
             }
+            const result = await response.json();
+            toast.success(result.message);
 
             // Update the task list after a successful update
             const updatedTasks = tasks.map(task =>
