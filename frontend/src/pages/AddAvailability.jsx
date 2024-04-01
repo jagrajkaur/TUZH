@@ -7,7 +7,7 @@ const AddAvailability = () => {
     const [appointmentDate, setAppointmentDate] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
-
+    const doctorId = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user'))._id : '';
     const getCurrentDate = () => {
         const today = new Date();
         const currentDate = today.toISOString().split('T')[0];
@@ -37,7 +37,7 @@ const AddAvailability = () => {
     
         try {
             const response = await axios.post(`${BASE_URL}/appointment/createAppointment`, appointmentData);
-            console.log('Appointment created:', response.data);
+            alert("Availability Added Successfully");
             setAppointmentDate('');
             setStartTime('');
             setEndTime('');
