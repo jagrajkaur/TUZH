@@ -6,6 +6,7 @@ import Dashboard from "../pages/Dashboard";
 import AdminDashboard from "../pages/AdminDashboard";
 import DoctorDashboard from "../pages/DoctorDashboard";
 import BookAppointment from "../pages/BookAppointment";
+import MyTasks from "../pages/MyTasks";
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
@@ -23,10 +24,11 @@ const Routers = () => {
         <Route path="/home" element={user ? <HomeLoggedIn /> : <Home/>} />
         <Route path="/register" element={<Signup/>} />
         <Route path="/login" element={<Login/>} />
-        <Route path="/bookappointment" element={user ? <BookAppointment/> : <Signup/>} />
+        <Route path="/bookappointment" element={user ? <BookAppointment/> : <Login/>} />
         <Route path="/contact" element={<Contact/>} />
         {/* Check if user is admin, navigate to AdminDashboard if true */}
         <Route path="/dashboard" element={isAdmin ? <AdminDashboard /> : isDoctor ? <DoctorDashboard /> : user ? <Dashboard/> : <Login/>} />
+        <Route path="/mytasks" element={<MyTasks/>} />
     </Routes>
 };
 

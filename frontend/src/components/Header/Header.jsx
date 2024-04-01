@@ -9,25 +9,6 @@ import { authContext } from "../../context/AuthContext";
    @FileDescription: To render the Header component
 */
 
-const navLinks = [
-    {
-        path:'/home',
-        display:'Home'
-    },
-    {
-        path:'/mytasks',
-        display:'My Tasks'
-    },
-    {
-        path:'/bookappointment',
-        display:'Book Appointment'
-    },
-    {
-        path:'/contact',
-        display:'Contact'
-    },
-]
-
 const Header = () => {
 
     const headerRef = useRef(null);
@@ -57,6 +38,25 @@ const Header = () => {
     });
 
     const toggleMenu = () => menuRef.current.classList.toggle('show__menu');
+
+    const navLinks = [
+        {
+            path:'/home',
+            display:'Home'
+        },
+        token && role && role === "Patient" ? {
+            path:'/mytasks',
+            display:'My Tasks'
+        } : null,
+        {
+            path:'/bookappointment',
+            display:'Book Appointment'
+        },
+        {
+            path:'/contact',
+            display:'Contact'
+        },
+    ].filter(Boolean); // Filter out null values
 
     return (
         <header className="header flex item-center" ref={headerRef}>
