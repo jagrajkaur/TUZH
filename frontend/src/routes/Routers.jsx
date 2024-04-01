@@ -6,6 +6,11 @@ import Dashboard from "../pages/Dashboard";
 import AdminDashboard from "../pages/AdminDashboard";
 import DoctorDashboard from "../pages/DoctorDashboard";
 import BookAppointment from "../pages/BookAppointment";
+import AddAvailability from "../pages/AddAvailability";
+import MySchedule from "../pages/MySchedule";
+import RequestedAppointments from "../pages/RequestedAppointments";
+import MyAppointments from "../pages/MyAppointments";
+import PatientAppointments from "../pages/PatientAppointment";
 import MyTasks from "../pages/MyTasks";
 
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -19,6 +24,7 @@ const Routers = () => {
     const isAdmin = role && role === "Admin";
     const isDoctor = role && role === "Doctor";
 
+
     return <Routes>
         <Route path="/" element={<Home/>} />
         <Route path="/home" element={user ? <HomeLoggedIn /> : <Home/>} />
@@ -26,8 +32,13 @@ const Routers = () => {
         <Route path="/login" element={<Login/>} />
         <Route path="/bookappointment" element={user ? <BookAppointment/> : <Login/>} />
         <Route path="/contact" element={<Contact/>} />
+        <Route path="/PatientAppointments" element={user ? <PatientAppointments/> : <Login/>} />
         {/* Check if user is admin, navigate to AdminDashboard if true */}
         <Route path="/dashboard" element={isAdmin ? <AdminDashboard /> : isDoctor ? <DoctorDashboard /> : user ? <Dashboard/> : <Login/>} />
+        <Route path="/doctor/addAvailablity" element={<AddAvailability/>} />
+        <Route path="/doctor/myAvailability" element={<MySchedule/>} />
+        <Route path="/doctor/myAppointments" element={<MyAppointments/>} />
+        <Route path="/doctor/pendingRequests" element={<RequestedAppointments/>} />
         <Route path="/mytasks" element={<MyTasks/>} />
     </Routes>
 };
