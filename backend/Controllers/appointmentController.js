@@ -55,8 +55,6 @@ export const getAppointments = async (req, res) => {
 
 export const requestAppointment = async (req, res) => {
     const { appointmentId, patientId} = req.query;
-    console.log (appointmentId);
-    console.log (patientId);
     try {
         // Find the appointment by ID
         const appointment = await Appointment.findById(appointmentId);
@@ -166,3 +164,49 @@ export const rejectRequest = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+export const getPatientAppointments = async (req, res) => {
+    try {
+
+        const  patientId  = req.params.id;
+        // Check if there is any appointment with the given patient_id and status is not cancelled
+        const appointment = await Appointment.findOne({ patient_id: patientId});
+        
+        if (appointment) {
+            // Patient has an appointment already
+            res.json({ length: 1, appointment });
+        } else {
+            // Patient does not have any active appointment
+            res.json({ length:0 });
+        }
+    } catch (error) {
+        console.error('Error checking appointment:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+export const getAppointmentsWithDoctorDetails = async (req, res) => {
+    try {
+        const patientId = req.params.id;
+        const appointment = await Appointment.findOne({ patient_id: patientId, status: { $ne: 'new' } }).exec();
+        const docID = appointment.doctor_id;
+        const doctorDetails = await User.findOne({ _id: docID, user_type: "Doctor"})
+                .select('first_name last_name address');
+
+                const appointmentWithDoctor = {
+                    _id: appointment._id,
+                    appointment_date: appointment.appointment_date,
+                    doctorName: `${doctorDetails.first_name} ${doctorDetails.last_name}`,
+                    doctorSpeciality: doctorDetails.speciality,
+                    doctorAddress: doctorDetails.address,
+                    start_time: appointment.start_time,
+                    end_time: appointment.end_time,
+                    status: appointment.status
+                };
+
+        res.json({ appointments: appointmentWithDoctor });
+    } catch (error) {
+        console.error('Error fetching appointments:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
