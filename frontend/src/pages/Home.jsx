@@ -1,5 +1,5 @@
 import React from "react";
-
+import {Link} from "react-router-dom";
 import heroImg01 from "../assets/images/hero-img01.png";
 import heroImg02 from "../assets/images/hero-img02.png";
 import heroImg03 from "../assets/images/hero-img03.png";
@@ -26,7 +26,12 @@ const Home = () => {
                                     <p className="text__para">
                                         Welcome to our community where we're dedicated to guiding minds towards a longer, healthier journey. Through expert resources, compassionate support, and personalized strategies, we empower individuals to navigate life's challenges with resilience and strength.
                                     </p>
-                                    <button className="btn">Request an Appointment</button>
+                                    
+                                    <Link to="/bookappointment">
+                                        <button className="bg-primaryColor py-2 px-6 text-white font-[600] h-[44px] flex items-center justify-center rounded-[50px]">
+                                            Request An Appointment
+                                        </button>
+                                    </Link>
                                 </div>
 
                                 {/* ========= hero counter ============ */}
