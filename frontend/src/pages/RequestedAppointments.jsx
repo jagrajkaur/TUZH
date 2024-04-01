@@ -41,6 +41,10 @@ const RequestedAppointments = () => {
             console.error('Error rejecting appointment request:', error);
         }
     };
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    };
 
     // Function to format time
     const formatTime = (timeString) => {
@@ -64,7 +68,7 @@ const RequestedAppointments = () => {
                                 <span>{request.patientEmail}</span>
                                 </div>
                                 <div className="flex justify-between mb-2">
-                                    <span><b>{new Date(request.appointment_date).toLocaleDateString()}</b></span>
+                                    <span><b>{formatDate(request.appointment_date)}</b></span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>{formatTime(request.start_time)} - {formatTime(request.end_time)}</span>    
