@@ -1,3 +1,4 @@
+import sendEmail from '../emailService.js';
 import Appointment from '../models/Appointments.js'; 
 import User from '../models/User.js';
 
@@ -84,6 +85,27 @@ export const requestAppointment = async (req, res) => {
         appointment.patient_id = patientId;
         await appointment.save();
 
+        // Fetch patient details including email
+        const patient = await User.findById(patientId);
+        if (!patient) {
+            return res.status(404).json({ message: 'Patient not found' });
+        }
+        const patientEmail = patient.email;
+
+        let emailConfig = {
+            subject : 'Appointment Booking Confirmation',
+            text: 'Your appointment booking is pending. You will be notified once the doctor confirms their availability.',
+            html: '<p>Your appointment booking is pending. You will be notified once the doctor confirms their availability.</p>',
+        }
+
+        // Send welcome email to the registered user using emailConfig
+        try {
+            await sendEmail(patientEmail, emailConfig.subject, emailConfig.text, emailConfig.hmtl);    
+        } catch (emailError) {
+            console.error('Error sending welcome email:', emailError);
+            return res.status(500).json({ success: false, message: "Failed to send appointment booking confirmation mail. Please try again." });
+        }
+
         res.status(200).json(appointment);
     } catch (error) {
         console.error('Error requesting appointment:', error);
@@ -151,7 +173,28 @@ export const acceptRequest = async (req, res) => {
         // Save the updated appointment
         await appointment.save();
 
-        res.json({ message: 'Appointment request accepted successfully' });
+        // Fetch patient details including email
+        const patient = await User.findById(appointment.patient_id);
+        if (!patient) {
+            return res.status(404).json({ message: 'Patient not found' });
+        }
+        const patientEmail = patient.email;
+
+        // Send email notification to patient about accepted appointment
+        let emailConfig = {
+            subject : 'Appointment Accepted',
+            text: 'Your appointment request has been accepted. Your appointment is now booked.',
+            html: '<p>Your appointment request has been accepted. Your appointment is now booked.</p>',
+        }
+
+        try {
+            await sendEmail(patientEmail, emailConfig.subject, emailConfig.text, emailConfig.hmtl);    
+        } catch (emailError) {
+            console.error('Error sending email:', emailError);
+            return res.status(500).json({ success: false, message: "Failed to send appointment acceptance mail. Please try again." });
+        }
+
+        res.json({ message: 'Appointment request accepted successfully. Email sent for update.' });
     } catch (error) {
         console.error('Error accepting appointment request:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -175,7 +218,28 @@ export const rejectRequest = async (req, res) => {
         // Save the updated appointment
         await appointment.save();
 
-        res.json({ message: 'Appointment request cancelled' });
+        // Fetch patient details including email
+        const patient = await User.findById(appointment.patient_id);
+        if (!patient) {
+            return res.status(404).json({ message: 'Patient not found' });
+        }
+        const patientEmail = patient.email;
+
+        // Send email notification to patient about rejected appointment
+        let emailConfig = {
+            subject : 'Appointment Rejected',
+            text: 'Your appointment request has been rejected. Please contact us for further details.',
+            html: '<p>Your appointment request has been rejected. Please contact us for further details.</p>',
+        }
+
+        try {
+            await sendEmail(patientEmail, emailConfig.subject, emailConfig.text, emailConfig.hmtl);    
+        } catch (emailError) {
+            console.error('Error sending email:', emailError);
+            return res.status(500).json({ success: false, message: "Failed to send appointment rejection mail. Please try again." });
+        }
+
+        res.json({ message: 'Appointment request cancelled. Email sent for update.' });
     } catch (error) {
         console.error('Error accepting appointment request:', error);
         res.status(500).json({ error: 'Internal Server Error' });
