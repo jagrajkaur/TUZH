@@ -1,3 +1,4 @@
+
 import Home from "../pages/Home";
 import Login from "../pages/Login1";
 import Signup from "../pages/Signup1";
@@ -12,6 +13,7 @@ import RequestedAppointments from "../pages/RequestedAppointments";
 import MyAppointments from "../pages/MyAppointments";
 import PatientAppointments from "../pages/PatientAppointment";
 import MyTasks from "../pages/MyTasks";
+import Profile from "../pages/Profile";
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
@@ -31,6 +33,7 @@ const Routers = () => {
         <Route path="/register" element={<Signup/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/contact" element={<Contact/>} />
+        <Route path="/profile" element={user ? <Profile/> : <Navigate to="/" replace /> } />
 
         {/* Routes associated with patients */}
         <Route path="/bookappointment" element={user && isPatient ? <BookAppointment/> : isDoctor ? <Navigate to="/" replace /> : <Login/>} />

@@ -17,7 +17,19 @@ const BookAppointment = () => {
                     startTime: appointment.startTime,
                     endTime:appointment.endTime
                 }));
-                setAppointments(formattedAppointments);
+                const upcomingWeek = getUpcomingWeekDates();
+                const filteredAppointments = formattedAppointments.filter(appointment => {
+                    const appointmentDate = new Date(appointment.appointmentDate);
+                    return upcomingWeek.some(date => isSameDay(date, appointmentDate));
+                });
+                const sortedAppointments = filteredAppointments.sort((a, b) => {
+                    const dateComparison = new Date(a.appointmentDate) - new Date(b.appointmentDate);
+                    if (dateComparison === 0) {
+                        return a.startTime.localeCompare(b.startTime);
+                    }
+                    return dateComparison;
+                });
+                setAppointments(sortedAppointments);
             } catch (error) {
                 console.error('Error fetching appointments:', error);
             }
@@ -47,6 +59,23 @@ const BookAppointment = () => {
         const hour = parseInt(hours, 10) % 12 || 12;
         const ampm = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
         return `${hour}:${minutes} ${ampm}`;
+    };
+    
+    const getUpcomingWeekDates = () => {
+        const today = new Date();
+        const upcomingWeek = [];
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            upcomingWeek.push(date);
+        }
+        return upcomingWeek;
+    };
+
+    const isSameDay = (date1, date2) => {
+        return date1.getFullYear() === date2.getFullYear() &&
+            date1.getMonth() === date2.getMonth() &&
+            date1.getDate() === date2.getDate();
     };
     
 

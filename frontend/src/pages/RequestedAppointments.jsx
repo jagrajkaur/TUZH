@@ -12,13 +12,47 @@ const RequestedAppointments = () => {
         fetchPendingRequests();
     }, []);
 
-    // Function to fetch pending appointment requests
+    // Function to fetch pending appointment requests for the upcoming week
     const fetchPendingRequests = async () => {
         try {
             const response = await axios.get(`${BASE_URL}/appointment/getPendingAppointments/${doctorId}`);
-            setPendingRequests(response.data);
+            const upcomingWeek = getUpcomingWeekDates();
+            const filteredRequests = response.data.filter(request => {
+                const requestDate = new Date(request.appointment_date);
+                return upcomingWeek.some(date => isSameDay(date, requestDate));
+            });
+            setPendingRequests(filteredRequests);
         } catch (error) {
             console.error('Error fetching pending requests:', error);
+        }
+    };
+
+    // Function to get dates for the upcoming week
+    const getUpcomingWeekDates = () => {
+        const today = new Date();
+        const upcomingWeek = [];
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            upcomingWeek.push(date.toISOString().split('T')[0]); // Get date in YYYY-MM-DD format
+        }
+        return upcomingWeek;
+    };
+
+    // Function to check if two dates are the same day
+    const isSameDay = (date1, date2) => {
+        try {
+            // Ensure date1 and date2 are valid Date objects
+            const d1 = new Date(date1);
+            const d2 = new Date(date2);
+            
+            // Check if they represent the same day
+            return d1.getFullYear() === d2.getFullYear() &&
+                d1.getMonth() === d2.getMonth() &&
+                d1.getDate() === d2.getDate();
+        } catch (error) {
+            console.error('Error checking if same day:', error);
+            return false; // Return false if an error occurs
         }
     };
 
@@ -41,6 +75,7 @@ const RequestedAppointments = () => {
             console.error('Error rejecting appointment request:', error);
         }
     };
+
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
         return new Date(dateString).toLocaleDateString(undefined, options);
@@ -55,12 +90,11 @@ const RequestedAppointments = () => {
     };
 
     return (
-        <div>
-            <div className="w-1/3 pr-4">
-                <h2 className="text-lg font-semibold mb-2">Booking Requests</h2>
-                {pendingRequests.length === 0 ? (
-                    <p>You have no new booking requests, <Link to="/doctor/myAppointments" className="text-blue-500">check Upcoming Appointments</Link></p>
-                ) : (
+        <div className="flex justify-center items-center h-screen">
+        <div className="w pr-4">
+            {pendingRequests.length === 0 ? (
+                <p className="text-center">You have no new booking requests, <Link to="/doctor/myAppointments" className="text-blue-500">check Upcoming Appointments</Link></p>
+            ) : (
                     <ul>
                         {pendingRequests.map(request => (
                             <li key={request._id} className="bg-gradient-to-b from-blue-300 to-purple-300 flex flex-col bg-white rounded-lg shadow-md p-4 mb-2">
