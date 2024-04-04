@@ -3,6 +3,7 @@ import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import * as taskController from '../Controllers/mytaskcontroller.js';
+import sendEmail from '../emailService.js';
 
 /* @author: Jagraj Kaur
    @FileDescription: Implemented function to register new user(patient/doctor)
@@ -93,10 +94,28 @@ export const register = async (req, res) => {
             }
         }
 
+        let emailConfig = {
+            subject : 'Welcome to TUZH Family!',
+            text: "Greetings from TUZH family! We are excited to work with you and are happy to have you on board. Our platform is made to ensure that your experience is easy and effective, whether you're a patient looking for high-quality mental health care or a doctor offering professional treatment.",
+            hmtl: '<h5>Greetings from TUZH family!</h5><br> <p>We are excited to work with you and are happy to have you on board. Our platform is made to ensure that your experience is easy and effective, whether you\'re a patient looking for high-quality mental health care or a doctor offering professional treatment.</p>',
+        }
+
+        // Send welcome email to the registered user using emailConfig
+        try {
+            await sendEmail(newUser.email, emailConfig.subject, emailConfig.text, emailConfig.hmtl);    
+        } catch (emailError) {
+            // Rollback the transaction and end session if email sending fails
+            await session.abortTransaction();
+            session.endSession();
+            
+            console.error('Error sending welcome email:', emailError);
+            return res.status(500).json({ success: false, message: "Failed to send welcome email. Please try again." });
+        }
+        
         await session.commitTransaction(); // Commit the transaction
         session.endSession();
 
-        res.status(200).json({ success:true, message: "User registered successfully" });
+        res.status(200).json({ success:true, message: "User registered successfully. Welcome email sent." });
     } catch(err){
         console.log(err.message);
         await session.abortTransaction(); // Rollback the transaction if an error occurs
