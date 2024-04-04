@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { toast } from "react-toastify";
 import { BASE_URL } from "../config";
 
 const AddAvailability = () => {
@@ -25,6 +26,26 @@ const AddAvailability = () => {
     // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Check if end time is greater than start time
+        if (new Date(`1970-01-01T${endTime}`) <= new Date(`1970-01-01T${startTime}`)) {
+            toast.error("End time should be greater than start time.");
+            setEndTime('');
+            return;
+        }
+
+        // Calculate the duration in minutes
+        const start = new Date(`1970-01-01T${startTime}`);
+        const end = new Date(`1970-01-01T${endTime}`);
+        const durationInMinutes = (end - start) / 60000;
+
+        // Check if the duration is between 30 minutes and 2 hours (120 minutes)
+        if (durationInMinutes < 30 || durationInMinutes > 120) {
+            toast.error("The duration should be between 30 minutes and 2 hours.");
+            setEndTime('');
+            setStartTime('');
+            return;
+        }
     
         const appointmentData = {
             doctor_id: doctorId,
@@ -33,16 +54,20 @@ const AddAvailability = () => {
             end_time: endTime
         };
     
-        console.log('Creating appointment with data:', appointmentData);
-    
         try {
             const response = await axios.post(`${BASE_URL}/appointment/createAppointment`, appointmentData);
-            alert("Availability Added Successfully");
+            
+            if (response.data.message === "exists"){
+                toast.error("Availability Already Exists !");
+            }
+            else{
+                toast.success("Availability Added Auccessfully!");  
+            }
             setAppointmentDate('');
             setStartTime('');
-            setEndTime('');
-        } catch (error) {
-            console.error('Error creating appointment:', error);
+            setEndTime('');  
+        } catch (err) {
+            toast.error(err.message);  
         }
     };
 

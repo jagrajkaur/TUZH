@@ -1,8 +1,25 @@
 import Appointment from '../models/Appointments.js'; 
 import User from '../models/User.js';
+
+
 export const createAppointment = async (req, res) => {
     try {
         const { doctor_id, appointment_date, start_time, end_time } = req.body;
+
+        // Check if there's an existing appointment with the same details
+        const existingAppointment = await Appointment.findOne({
+            doctor_id,
+            appointment_date,
+            start_time,
+            end_time
+        });
+
+        if (existingAppointment) {
+            // Send an error response if the appointment already exists
+            return res.status(200).json({message: "exists" });
+        }
+
+        // If no existing appointment found, create a new one
         const appointment = new Appointment({
             doctor_id,
             appointment_date,
@@ -10,7 +27,7 @@ export const createAppointment = async (req, res) => {
             end_time,
         });
         await appointment.save();
-        res.status(200).json({ success:true, message: "New Availability Added successfully" });
+        res.status(200).json({ success:true, message: "success" });
     } catch (error) {
         console.error('Error creating appointment:', error);
         res.status(500).json({ message: 'Failed to create appointment' });
@@ -282,3 +299,29 @@ export const markComplete = async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
+
+
+export const updateAppointment = async (req, res) => {
+    const  id  = req.params.id;
+    const { start_time, end_time } = req.body;
+    try {
+        // Find the appointment by ID
+        const appointment = await Appointment.findById(id);
+
+        if (!appointment) {
+            return res.status(404).json({ error: 'Appointment not found' });
+        }
+
+        // Update the appointment
+        appointment.start_time = start_time;
+        appointment.end_time = end_time;
+
+        // Save the updated appointment
+        await appointment.save();
+
+        res.json({ message: 'Appointment updated successfully', appointment });
+    } catch (error) {
+        console.error('Error updating appointment:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
