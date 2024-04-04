@@ -12,14 +12,30 @@ const PatientAppointments = () => {
             try {
                 const patientId = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user'))._id : '';
                 const response = await axios.get(`${BASE_URL}/appointment/getMyAppointment/${patientId}`);
-                setAppointments(response.data.appointments);
+                
+                const updatedAppointments = await Promise.all(response.data.appointments.map(async (appointment) => {
+                    if (appointment.status!== "cancelled" && isAppointmentDatePassed(appointment.appointment_date)) {
+                        // If the appointment date has passed, update its status to 'cancelled'
+                        
+                        await axios.put(`${BASE_URL}/appointment/rejectRequest/${appointment._id}`);
+                        
+                    }
+                    return appointment;
+                }));
+                setAppointments(updatedAppointments);
             } catch (error) {
                 console.error('Error fetching appointments:', error);
             }
         };
-
+    
         fetchAppointments();
     }, []);
+
+    const isAppointmentDatePassed = (dateString) => {
+        const appointmentDate = new Date(dateString);
+        const currentDate = new Date();
+        return currentDate > appointmentDate;
+    };
 
     const cancelAppointment = async (appointmentId) => {
         try {

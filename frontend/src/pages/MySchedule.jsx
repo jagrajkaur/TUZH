@@ -106,16 +106,26 @@ const MySchedule = () => {
         }
     };
 
-    // Toggle whether the appointment is being edited
-    const toggleEdit = (id) => {
+    // Toggle whether the appointment is being edited or cancel editing
+    const toggleEdit = (id, cancelEdit = false) => {
         setAppointments(prevAppointments => {
             return prevAppointments.map(appointment => {
                 if (appointment._id === id) {
+                    if (cancelEdit) {
+                        // Cancel editing, fetch appointments again
+                        fetchAppointments();
+                    }
                     return { ...appointment, isEditing: !appointment.isEditing };
                 }
                 return appointment;
             });
         });
+    };
+
+    // Handle cancel button click
+    const handleCancelEdit = (id) => {
+        // Toggle edit mode and fetch appointments
+        toggleEdit(id, true);
     };
 
     // Handle input change for appointment details
@@ -164,7 +174,7 @@ const MySchedule = () => {
                                             className="border rounded px-2 py-1 mr-2" // Add border to time fields
                                         />
                                         <button onClick={() => handleUpdate(appointment._id)} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2">Save</button>
-                                        <button onClick={() => toggleEdit(appointment._id)} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancel</button>
+                                        <button onClick={() => handleCancelEdit(appointment._id)} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancel</button>
                                     </>
                                 ) : (
                                     <>
