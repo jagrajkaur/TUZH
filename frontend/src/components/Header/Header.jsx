@@ -28,9 +28,21 @@ const Header = () => {
     });
   };
 
-  
+  const handleLogout = () => {
+    dispatch({ type: "LOGOUT" });
+    navigate("/");
+  };
 
-    const navLinks = [
+  useEffect(() => {
+    handleStickyHeader();
+
+    return () =>
+      window.removeEventListener("scroll", handleStickyHeader);
+  }, []);
+
+  const toggleMenu = () => menuRef.current.classList.toggle("show__menu");
+
+  const navLinks = [
         {
             path:'/home',
             display:'Home'
@@ -53,6 +65,7 @@ const Header = () => {
         },
     ].filter(Boolean); // Filter out null values
 
+     // Define menu items based on user role
     const getMenuItems = () => {
       if (role === "Doctor") {
         // Return admin menu items
@@ -70,25 +83,6 @@ const Header = () => {
     };
 
     const menuItems = getMenuItems();
-
-  const handleLogout = () => {
-    dispatch({ type: "LOGOUT" });
-    navigate("/");
-  };
-
-  useEffect(() => {
-    handleStickyHeader();
-
-    return () =>
-      window.removeEventListener("scroll", handleStickyHeader);
-  }, []);
-
-  const toggleMenu = () => menuRef.current.classList.toggle("show__menu");
-
-  // Define menu items based on user role
-  
-
-  
 
   return (
     <header className="header flex item-center" ref={headerRef}>
