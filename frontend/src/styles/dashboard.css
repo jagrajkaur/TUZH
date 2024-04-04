@@ -40,3 +40,12 @@
     background-color: #88cfa5;
     color: #ffffff;
 }
+
+.clickable-text {
+    cursor: pointer;
+}
+  
+.clickable-text:hover {
+    text-decoration: underline;
+}
+  

@@ -33,7 +33,7 @@ const Routers = () => {
         <Route path="/register" element={<Signup/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/contact" element={<Contact/>} />
-        <Route path="/profile" element={user ? <Profile/> : <Navigate to="/" replace /> } />
+        <Route path="/profile" element={user ? <Profile/> : <Login/> } />
 
         {/* Routes associated with patients */}
         <Route path="/bookappointment" element={user && isPatient ? <BookAppointment/> : isDoctor ? <Navigate to="/" replace /> : <Login/>} />

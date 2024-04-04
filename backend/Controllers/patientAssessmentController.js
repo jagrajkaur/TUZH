@@ -34,7 +34,7 @@ export const savePatientAssessment = async(req,res)=>{
         }, 0);  // Initialize accumulator with 0
 
         let depression_type;
-        if (total_score >= 1 && total_score <= 4) {
+        if (total_score >= 0 && total_score <= 4) {
             depression_type = 'Minimal';
         } else if (total_score >= 5 && total_score <= 9){
             depression_type = 'Mild';
@@ -42,8 +42,10 @@ export const savePatientAssessment = async(req,res)=>{
             depression_type = 'Moderate';
         } else if (total_score >= 15 && total_score <= 19){
             depression_type = 'Moderately severe';
-        } else {
+        } else if (total_score >= 20 && total_score <= 30){
             depression_type = 'Severe';
+        } else {
+            depression_type = 'N/A';
         }
 
         const newAssesment = new PatientAssessment({
