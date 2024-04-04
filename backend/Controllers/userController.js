@@ -5,10 +5,38 @@ import redisClient from '../redis.js';
    @FileDescription: Implemented function to update, delete and fetch users from the database.
 */
 
+let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
+
 export const updateUser = async(req,res)=>{
     const id = req.params.id;
 
     try{
+        const {first_name, email, user_type} = req.body;
+
+        //validate user inputs
+        if (first_name.length <= 2) {
+            return res.status(403).json({ message: "First name must be atleast 3 characters" });
+        }
+
+        if (!email.length) {
+            return res.status(403).json({ message: "Email is mandatory" });
+        }
+
+        if (!emailRegex.test(email)) {
+            return res.status(403).json({ message: "Invalid email or format. Email should be in format abc@xyz.com" });
+        }
+        
+        // Check if user type is trying to be updated
+        if (user_type) {
+            return res.status(403).json({ message: "User type cannot be updated directly" });
+        }
+
+        // Check if the email already exists for a different user
+        const existingUser = await User.findOne({ email, _id: { $ne: id } }); // Exclude current user ID
+        if (existingUser) {
+            return res.status(400).json({ message: "Email is already registered with another user" });
+        }
+
         const updatedUser = await User.findByIdAndUpdate(id, {$set: req.body}, {new:true});
         await redisClient.del('cachedUsers'); // Clear cached users after update
 
