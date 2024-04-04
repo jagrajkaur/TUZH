@@ -14,12 +14,12 @@ const PatientAppointments = () => {
                 const response = await axios.get(`${BASE_URL}/appointment/getMyAppointment/${patientId}`);
                 
                 const updatedAppointments = await Promise.all(response.data.appointments.map(async (appointment) => {
-                    if (appointment.status!== "cancelled" && isAppointmentDatePassed(appointment.appointment_date)) {
-                        // If the appointment date has passed, update its status to 'cancelled'
+                    // if (appointment.status!== "cancelled" && isAppointmentDatePassed(appointment.appointment_date)) {
+                    //     // If the appointment date has passed, update its status to 'cancelled'
                         
-                        await axios.put(`${BASE_URL}/appointment/rejectRequest/${appointment._id}`);
+                    //     await axios.put(`${BASE_URL}/appointment/rejectRequest/${appointment._id}`);
                         
-                    }
+                    // }
                     return appointment;
                 }));
                 setAppointments(updatedAppointments);
