@@ -127,7 +127,7 @@ const Dashboard = () => {
                 <div className={`rounded-full ${active ? 'bg-[#a4cbb4]' : 'bg-gray-300'} w-8 h-8 flex items-center justify-center text-white font-bold`}>
                     {number}
                 </div>
-                <span className={`ml-2 text-lg ${active ? 'font-semibold' : ''}`} onClick={onClick}>{label}</span>
+                <span className={`ml-2 text-lg clickable-text ${active ? 'font-semibold' : ''}`} onClick={onClick}>{label}</span>
             </div>
         );
     };
@@ -240,7 +240,7 @@ const Dashboard = () => {
                                         <h3 className="mt-8 text-xl font-semibold">Interpreting your Total Score</h3>
                                         <ul className="mt-4 list-disc pl-5">
                                             <li>
-                                                <span className="font-semibold">1-4:</span> Minimal depression
+                                                <span className="font-semibold">0-4:</span> Minimal depression
                                             </li>
                                             <li>
                                                 <span className="font-semibold">5-9:</span> Mild depression
