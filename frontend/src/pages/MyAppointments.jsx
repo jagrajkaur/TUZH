@@ -59,12 +59,11 @@ const MyAppointments = () => {
     };
 
     return (
-        <div className="flex justify-center items-center h-full">
-            <div className="w-1/2 pr-4">
-                <h2 className="text-lg font-semibold mb-2">Upcoming Appointments</h2>
-                {approvedAppointments.length === 0 ? (
-                    <p>You have No Upcoming Appointments, <Link to="/doctor/pendingRequests" className="text-blue-500">check Pending Requests</Link></p>
-                ) : (
+        <div className="flex justify-center items-center h-screen">
+        <div className="w pr-4">
+            {approvedAppointments.length === 0 ? (
+                <p className="text-center">You have No Upcoming Appointments, <Link to="/doctor/pendingRequests" className="text-blue-500">check Pending Requests</Link></p>
+          ) : (
                     <ul>
                         {approvedAppointments.map(appointment => (
                             <li key={appointment._id} className="flex items-center justify-between bg-white rounded-lg shadow-md p-4 mb-2">
