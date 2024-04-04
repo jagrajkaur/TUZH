@@ -41,9 +41,19 @@ const RequestedAppointments = () => {
 
     // Function to check if two dates are the same day
     const isSameDay = (date1, date2) => {
-        return date1.getFullYear() === date2.getFullYear() &&
-            date1.getMonth() === date2.getMonth() &&
-            date1.getDate() === date2.getDate();
+        try {
+            // Ensure date1 and date2 are valid Date objects
+            const d1 = new Date(date1);
+            const d2 = new Date(date2);
+            
+            // Check if they represent the same day
+            return d1.getFullYear() === d2.getFullYear() &&
+                d1.getMonth() === d2.getMonth() &&
+                d1.getDate() === d2.getDate();
+        } catch (error) {
+            console.error('Error checking if same day:', error);
+            return false; // Return false if an error occurs
+        }
     };
 
     // Function to accept a request
