@@ -30,6 +30,20 @@ const Signup = () => {
     const submitHandler = async event=>{
         event.preventDefault();
         setLoading(true);
+        // Calculate the age based on the provided date of birth
+        const dob = new Date(formData.date_of_birth);
+        const today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        const monthDiff = today.getMonth() - dob.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+            age--;
+        }
+
+        // Check if the user is at least 18 years old
+        if (age < 18) {
+            setLoading(false);
+            return toast.error("You must be at least 18 years old to sign up.");
+        }
 
         try {
             console.log(formData);
