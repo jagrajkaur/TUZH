@@ -48,7 +48,7 @@ const MyAppointments = () => {
         const formattedStartTime = formatTime(startTime);
         const currentTime = formatTime(new Date().toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'}));
         
-        if (currentDate < formattedAppointmentDate && currentTime > formattedStartTime) {
+        if (currentDate >= formattedAppointmentDate && currentTime > formattedStartTime) {
             try {
                 await axios.put(`${BASE_URL}/appointment/markAsCompleted/${id}`);
                 alert("Appointment Completed Successfully!");
