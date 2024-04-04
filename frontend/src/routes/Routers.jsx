@@ -1,3 +1,4 @@
+
 import Home from "../pages/Home";
 import Login from "../pages/Login1";
 import Signup from "../pages/Signup1";
@@ -23,23 +24,32 @@ const Routers = () => {
     // Check if the user is logged in and has the role of "admin" or "doctor"
     const isAdmin = role && role === "Admin";
     const isDoctor = role && role === "Doctor";
-
+    const isPatient = role && role === "Patient";
 
     return <Routes>
         <Route path="/" element={<Home/>} />
         <Route path="/home" element={user ? <HomeLoggedIn /> : <Home/>} />
         <Route path="/register" element={<Signup/>} />
         <Route path="/login" element={<Login/>} />
-        <Route path="/bookappointment" element={user ? <BookAppointment/> : <Login/>} />
         <Route path="/contact" element={<Contact/>} />
-        <Route path="/PatientAppointments" element={user ? <PatientAppointments/> : <Login/>} />
+
+        {/* Routes associated with patients */}
+        <Route path="/bookappointment" element={user && isPatient ? <BookAppointment/> : isDoctor ? <Navigate to="/" replace /> : <Login/>} />
+        <Route path="/PatientAppointments" element={user && isPatient ? <PatientAppointments/> : isDoctor ? <Navigate to="/" replace /> : <Login/>} />
+        <Route path="/mytasks" element={user && isPatient ? <MyTasks/> : isDoctor ? <Navigate to="/" replace /> : <Login/>} />
+        
         {/* Check if user is admin, navigate to AdminDashboard if true */}
         <Route path="/dashboard" element={isAdmin ? <AdminDashboard /> : isDoctor ? <DoctorDashboard /> : user ? <Dashboard/> : <Login/>} />
-        <Route path="/doctor/addAvailablity" element={<AddAvailability/>} />
-        <Route path="/doctor/myAvailability" element={<MySchedule/>} />
-        <Route path="/doctor/myAppointments" element={<MyAppointments/>} />
-        <Route path="/doctor/pendingRequests" element={<RequestedAppointments/>} />
-        <Route path="/mytasks" element={<MyTasks/>} />
+        
+        {/* Routes associated with doctors */}
+        <Route path="/doctor/addAvailablity" element={user && isDoctor ? <AddAvailability/> : isPatient ? <Navigate to="/" replace /> : <Login/>} />
+        <Route path="/doctor/myAvailability" element={user && isDoctor ? <MySchedule/> : isPatient ? <Navigate to="/" replace /> : <Login/>} />
+        <Route path="/doctor/myAppointments" element={user && isDoctor ? <MyAppointments/> : isPatient ? <Navigate to="/" replace /> : <Login/>} />
+        <Route path="/doctor/pendingRequests" element={user && isDoctor ? <RequestedAppointments/> : isPatient ? <Navigate to="/" replace /> : <Login/>} />
+        
+
+        {/* Catch-all route for handling undefined routes */}
+        <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
 };
 

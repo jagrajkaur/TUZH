@@ -76,32 +76,34 @@ const MySchedule = () => {
     // Function to update an appointment
     const updateAppointment = async (id, updatedAppointment) => {
         try {
-            await axios.put(`${BASE_URL}/appointment/updateAppointment/${id}`, updatedAppointment);
             // Check if end time is greater than start time
-            if (new Date(`1970-01-01T${endTime}`) <= new Date(`1970-01-01T${startTime}`)) {
-                toast.error("End time should be greater than start time.");
-                setEndTime('');
-                return;
-            }
+            const startTime = new Date(`1970-01-01T${updatedAppointment.start_time}`);
+            const endTime = new Date(`1970-01-01T${updatedAppointment.end_time}`);
 
             // Calculate the duration in minutes
-            const start = new Date(`1970-01-01T${startTime}`);
-            const end = new Date(`1970-01-01T${endTime}`);
-            const durationInMinutes = (end - start) / 60000;
+            const durationInMinutes = (endTime - startTime) / 60000;
+
+            // Check if end time is greater than start time
+            if (endTime <= startTime) {
+                toast.error("End time must be greater than start time.");
+                return;
+            }
 
             // Check if the duration is between 30 minutes and 2 hours (120 minutes)
             if (durationInMinutes < 30 || durationInMinutes > 120) {
                 toast.error("The duration should be between 30 minutes and 2 hours.");
-                setEndTime('');
-                setStartTime('');
                 return;
             }
-                
-                fetchAppointments();
-                
-            } catch (error) {
-                console.error('Error updating appointment:', error);
-            }
+
+            // Proceed with updating the appointment if validation checks pass
+            await axios.put(`${BASE_URL}/appointment/updateAppointment/${id}`, updatedAppointment);
+            fetchAppointments();
+            toggleEdit(id); // Toggle back to view mode after update
+            toast.success("Availability Updated Successfully!");
+        } catch (error) {
+            console.error('Error updating appointment:', error);
+            toast.error("Error updating appointment. Please try again later.");
+        }
     };
 
     // Toggle whether the appointment is being edited
@@ -133,10 +135,8 @@ const MySchedule = () => {
     const handleUpdate = (id) => {
         const updatedAppointment = appointments.find(appointment => appointment._id === id);
         updateAppointment(id, updatedAppointment);
-        toggleEdit(id); // Toggle back to view mode after update
-        toast.success("Availability Updated Successfully! ");
+        // No need to toggle edit mode here, as it's handled within updateAppointment
     };
-
 
     return (
         <div className="flex justify-center items-center h-full">
