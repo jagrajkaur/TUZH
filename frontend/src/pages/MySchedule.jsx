@@ -28,10 +28,11 @@ const MySchedule = () => {
     const fetchAppointments = async () => {
         try {
             const response = await axios.get(`${BASE_URL}/appointment/fetch/${doctorId}`);
-            const upcomingWeek = getUpcomingWeekDates();
+            const currentDate = formatDate(new Date()); // Format current date
             const filteredAppointments = response.data.filter(appointment => {
-                const appointmentDate = new Date(appointment.appointment_date);
-                return upcomingWeek.some(date => isSameDay(date, appointmentDate));
+                const appointmentDate = formatDate(new Date(appointment.appointment_date)); // Format appointment date
+                // Include appointments with appointment date greater than or equal to the current date
+                return appointmentDate >= currentDate;
             });
             const sortedAppointments = filteredAppointments.sort((a, b) => {
                 const dateComparison = new Date(a.appointment_date) - new Date(b.appointment_date);
@@ -45,23 +46,24 @@ const MySchedule = () => {
             console.error('Error fetching appointments:', error);
         }
     };
+    
 
-    const getUpcomingWeekDates = () => {
-        const today = new Date();
-        const upcomingWeek = [];
-        for (let i = 0; i < 7; i++) {
-            const date = new Date(today);
-            date.setDate(today.getDate() + i);
-            upcomingWeek.push(date);
-        }
-        return upcomingWeek;
-    };
+    // const getUpcomingWeekDates = () => {
+    //     const today = new Date();
+    //     const upcomingWeek = [];
+    //     for (let i = 0; i < 7; i++) {
+    //         const date = new Date(today);
+    //         date.setDate(today.getDate() + i);
+    //         upcomingWeek.push(date);
+    //     }
+    //     return upcomingWeek;
+    // };
 
-    const isSameDay = (date1, date2) => {
-        return date1.getFullYear() === date2.getFullYear() &&
-            date1.getMonth() === date2.getMonth() &&
-            date1.getDate() === date2.getDate();
-    };
+    // const isSameDay = (date1, date2) => {
+    //     return date1.getFullYear() === date2.getFullYear() &&
+    //         date1.getMonth() === date2.getMonth() &&
+    //         date1.getDate() === date2.getDate();
+    // };
 
     // Function to cancel an appointment
     const deleteAppointment = async (id) => {
